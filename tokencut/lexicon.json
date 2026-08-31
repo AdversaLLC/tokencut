@@ -1,0 +1,702 @@
+{
+"version": "tokencut-1 (gleaned from defluff lexicon-v1, MIT)",
+"default_threshold": 0.08,
+"category_weights": {
+"cliche": 1.0,
+"hedge": 0.8,
+"ai-vocab": 1.2,
+"corporate": 0.9,
+"transition": 0.6,
+"custom": 1.0
+},
+"entries": [
+{
+"pattern": "at the end of the day",
+"category": "cliche"
+},
+{
+"pattern": "it is important to note",
+"category": "cliche"
+},
+{
+"pattern": "it's important to note",
+"category": "cliche"
+},
+{
+"pattern": "in today's fast-paced world",
+"category": "cliche"
+},
+{
+"pattern": "in today's rapidly evolving",
+"category": "cliche"
+},
+{
+"pattern": "move the needle",
+"category": "cliche"
+},
+{
+"pattern": "game changer",
+"category": "cliche"
+},
+{
+"pattern": "game-changer",
+"category": "cliche"
+},
+{
+"pattern": "think outside the box",
+"category": "cliche"
+},
+{
+"pattern": "low-hanging fruit",
+"category": "cliche"
+},
+{
+"pattern": "low hanging fruit",
+"category": "cliche"
+},
+{
+"pattern": "paradigm shift",
+"category": "cliche"
+},
+{
+"pattern": "win-win",
+"category": "cliche"
+},
+{
+"pattern": "circle back",
+"category": "cliche"
+},
+{
+"pattern": "touch base",
+"category": "cliche"
+},
+{
+"pattern": "to be perfectly honest",
+"category": "cliche"
+},
+{
+"pattern": "to be honest with you",
+"category": "cliche"
+},
+{
+"pattern": "at this point in time",
+"category": "cliche"
+},
+{
+"pattern": "going forward",
+"category": "cliche"
+},
+{
+"pattern": "core competencies",
+"category": "cliche"
+},
+{
+"pattern": "value proposition",
+"category": "cliche"
+},
+{
+"pattern": "we're thrilled to",
+"category": "cliche"
+},
+{
+"pattern": "we are thrilled to",
+"category": "cliche"
+},
+{
+"pattern": "excited to announce",
+"category": "cliche"
+},
+{
+"pattern": "it seems that it may",
+"category": "hedge"
+},
+{
+"pattern": "it seems that",
+"category": "hedge"
+},
+{
+"pattern": "it may potentially",
+"category": "hedge"
+},
+{
+"pattern": "it is worth noting that",
+"category": "ai-vocab"
+},
+{
+"pattern": "it should be noted that",
+"category": "hedge"
+},
+{
+"pattern": "needless to say",
+"category": "hedge"
+},
+{
+"pattern": "as we all know",
+"category": "hedge"
+},
+{
+"pattern": "of course",
+"category": "hedge"
+},
+{
+"pattern": "clearly",
+"category": "hedge"
+},
+{
+"pattern": "obviously",
+"category": "hedge"
+},
+{
+"pattern": "basically",
+"category": "hedge"
+},
+{
+"pattern": "actually",
+"category": "hedge"
+},
+{
+"pattern": "essentially",
+"category": "hedge"
+},
+{
+"pattern": "generally speaking",
+"category": "hedge"
+},
+{
+"pattern": "in many ways",
+"category": "hedge"
+},
+{
+"pattern": "there are a number of",
+"category": "hedge"
+},
+{
+"pattern": "a number of various",
+"category": "hedge"
+},
+{
+"pattern": "various different",
+"category": "hedge"
+},
+{
+"pattern": "in order to",
+"category": "hedge"
+},
+{
+"pattern": "really need to",
+"category": "hedge"
+},
+{
+"pattern": "delve",
+"category": "ai-vocab"
+},
+{
+"pattern": "delving",
+"category": "ai-vocab"
+},
+{
+"pattern": "delved",
+"category": "ai-vocab"
+},
+{
+"pattern": "crucial",
+"category": "ai-vocab"
+},
+{
+"pattern": "robust",
+"category": "ai-vocab"
+},
+{
+"pattern": "comprehensive",
+"category": "ai-vocab"
+},
+{
+"pattern": "nuanced",
+"category": "ai-vocab"
+},
+{
+"pattern": "multifaceted",
+"category": "ai-vocab"
+},
+{
+"pattern": "pivotal",
+"category": "ai-vocab"
+},
+{
+"pattern": "tapestry",
+"category": "ai-vocab"
+},
+{
+"pattern": "underscore",
+"category": "ai-vocab"
+},
+{
+"pattern": "foster",
+"category": "ai-vocab"
+},
+{
+"pattern": "fostering",
+"category": "ai-vocab"
+},
+{
+"pattern": "showcase",
+"category": "ai-vocab"
+},
+{
+"pattern": "showcasing",
+"category": "ai-vocab"
+},
+{
+"pattern": "intricate",
+"category": "ai-vocab"
+},
+{
+"pattern": "vibrant",
+"category": "ai-vocab"
+},
+{
+"pattern": "landscape",
+"category": "ai-vocab"
+},
+{
+"pattern": "it's worth noting",
+"category": "ai-vocab"
+},
+{
+"pattern": "it is worth noting",
+"category": "ai-vocab"
+},
+{
+"pattern": "synergy",
+"category": "corporate"
+},
+{
+"pattern": "leverage",
+"category": "corporate"
+},
+{
+"pattern": "leveraging",
+"category": "corporate"
+},
+{
+"pattern": "utilize",
+"category": "corporate"
+},
+{
+"pattern": "utilizing",
+"category": "corporate"
+},
+{
+"pattern": "actionable insights",
+"category": "corporate"
+},
+{
+"pattern": "cutting-edge",
+"category": "corporate"
+},
+{
+"pattern": "cutting edge",
+"category": "corporate"
+},
+{
+"pattern": "best-in-class",
+"category": "corporate"
+},
+{
+"pattern": "world-class",
+"category": "corporate"
+},
+{
+"pattern": "stakeholders",
+"category": "corporate"
+},
+{
+"pattern": "bandwidth",
+"category": "corporate"
+},
+{
+"pattern": "furthermore",
+"category": "transition"
+},
+{
+"pattern": "moreover",
+"category": "transition"
+},
+{
+"pattern": "additionally",
+"category": "transition"
+},
+{
+"pattern": "in conclusion",
+"category": "transition"
+},
+{
+"pattern": "in summary",
+"category": "transition"
+},
+{
+"pattern": "to summarize",
+"category": "transition"
+},
+{
+"pattern": "as mentioned above",
+"category": "transition"
+},
+{
+"pattern": "as mentioned earlier",
+"category": "transition"
+},
+{
+"pattern": "last but not least",
+"category": "transition"
+},
+{
+"pattern": "first and foremost",
+"category": "transition"
+},
+{
+"pattern": "in terms of",
+"category": "transition"
+},
+{
+"pattern": "with regard to",
+"category": "transition"
+},
+{
+"pattern": "with regards to",
+"category": "transition"
+},
+{
+"pattern": "it's important to note",
+"category": "ai-vocab"
+},
+{
+"pattern": "it is important to note that",
+"category": "ai-vocab"
+},
+{
+"pattern": "it's worth emphasizing",
+"category": "ai-vocab"
+},
+{
+"pattern": "this allows us to",
+"category": "ai-vocab"
+},
+{
+"pattern": "and more",
+"category": "hedge"
+},
+{
+"pattern": "there are valid points on both sides",
+"category": "hedge"
+},
+{
+"pattern": "it depends on the context",
+"category": "hedge"
+},
+{
+"pattern": "great question",
+"category": "ai-vocab"
+},
+{
+"pattern": "absolutely",
+"category": "ai-vocab"
+},
+{
+"pattern": "certainly",
+"category": "ai-vocab"
+},
+{
+"pattern": "tends to",
+"category": "hedge"
+},
+{
+"pattern": "can often",
+"category": "hedge"
+},
+{
+"pattern": "as mentioned",
+"category": "transition"
+},
+{
+"pattern": "a beacon of",
+"category": "ai-vocab"
+},
+{
+"pattern": "aims to explore",
+"category": "ai-vocab"
+},
+{
+"pattern": "as a matter of fact",
+"category": "transition"
+},
+{
+"pattern": "as we have seen",
+"category": "transition"
+},
+{
+"pattern": "delve deeper",
+"category": "ai-vocab"
+},
+{
+"pattern": "diverse array",
+"category": "ai-vocab"
+},
+{
+"pattern": "drinking the kool-aid",
+"category": "cliche"
+},
+{
+"pattern": "due to the fact that",
+"category": "transition"
+},
+{
+"pattern": "ever-changing",
+"category": "cliche"
+},
+{
+"pattern": "ever-evolving",
+"category": "cliche"
+},
+{
+"pattern": "for the most part",
+"category": "hedge"
+},
+{
+"pattern": "game-changing",
+"category": "cliche"
+},
+{
+"pattern": "in a very real sense",
+"category": "cliche"
+},
+{
+"pattern": "in the realm of",
+"category": "ai-vocab"
+},
+{
+"pattern": "in today's world",
+"category": "cliche"
+},
+{
+"pattern": "it is worth mentioning that",
+"category": "transition"
+},
+{
+"pattern": "leading edge",
+"category": "corporate"
+},
+{
+"pattern": "let's dive in",
+"category": "cliche"
+},
+{
+"pattern": "leverage the power of",
+"category": "corporate"
+},
+{
+"pattern": "moving the needle",
+"category": "cliche"
+},
+{
+"pattern": "navigating the complexities",
+"category": "cliche"
+},
+{
+"pattern": "nestled in the heart of",
+"category": "cliche"
+},
+{
+"pattern": "no-brainer",
+"category": "cliche"
+},
+{
+"pattern": "one-stop shop",
+"category": "cliche"
+},
+{
+"pattern": "play a significant role in shaping",
+"category": "cliche"
+},
+{
+"pattern": "since the dawn of time",
+"category": "cliche"
+},
+{
+"pattern": "stands as a testament",
+"category": "ai-vocab"
+},
+{
+"pattern": "unleash",
+"category": "ai-vocab"
+},
+{
+"pattern": "cannot be overstated",
+"category": "ai-vocab"
+},
+{
+"pattern": "plays a crucial role",
+"category": "ai-vocab"
+},
+{
+"pattern": "plays a vital role",
+"category": "ai-vocab"
+},
+{
+"pattern": "plays a pivotal role",
+"category": "ai-vocab"
+},
+{
+"pattern": "shed light on",
+"category": "ai-vocab"
+},
+{
+"pattern": "paves the way",
+"category": "cliche"
+},
+{
+"pattern": "pave the way",
+"category": "cliche"
+},
+{
+"pattern": "a testament to",
+"category": "ai-vocab"
+},
+{
+"pattern": "it goes without saying",
+"category": "hedge"
+},
+{
+"pattern": "rest assured",
+"category": "cliche"
+},
+{
+"pattern": "look no further",
+"category": "cliche"
+},
+{
+"pattern": "embark on a journey",
+"category": "cliche"
+},
+{
+"pattern": "embark on",
+"category": "ai-vocab"
+},
+{
+"pattern": "when it comes to",
+"category": "transition"
+},
+{
+"pattern": "unlock the power of",
+"category": "corporate"
+},
+{
+"pattern": "unlock the potential",
+"category": "corporate"
+},
+{
+"pattern": "dive into",
+"category": "cliche"
+},
+{
+"pattern": "deep dive",
+"category": "cliche"
+},
+{
+"pattern": "treasure trove",
+"category": "ai-vocab"
+},
+{
+"pattern": "at its core",
+"category": "ai-vocab"
+},
+{
+"pattern": "the world of",
+"category": "ai-vocab"
+},
+{
+"pattern": "in the world of",
+"category": "ai-vocab"
+},
+{
+"pattern": "myriad",
+"category": "ai-vocab"
+},
+{
+"pattern": "plethora",
+"category": "ai-vocab"
+},
+{
+"pattern": "boasts",
+"category": "ai-vocab"
+},
+{
+"pattern": "harness",
+"category": "ai-vocab"
+},
+{
+"pattern": "harnessing",
+"category": "ai-vocab"
+},
+{
+"pattern": "meticulous",
+"category": "ai-vocab"
+},
+{
+"pattern": "meticulously",
+"category": "ai-vocab"
+},
+{
+"pattern": "captivating",
+"category": "ai-vocab"
+},
+{
+"pattern": "resonate",
+"category": "ai-vocab"
+},
+{
+"pattern": "realm",
+"category": "ai-vocab"
+},
+{
+"pattern": "testament",
+"category": "ai-vocab"
+},
+{
+"pattern": "transformative",
+"category": "ai-vocab"
+},
+{
+"pattern": "seamless",
+"category": "corporate"
+},
+{
+"pattern": "seamlessly",
+"category": "corporate"
+},
+{
+"pattern": "load-bearing",
+"category": "ai-vocab"
+},
+{
+"pattern": "seam",
+"category": "ai-vocab"
+},
+{
+"pattern": "principled",
+"category": "ai-vocab"
+},
+{
+"pattern": "holistic",
+"category": "ai-vocab"
+},
+{
+"pattern": "dive",
+"category": "ai-vocab"
+},
+{
+"pattern": "slop",
+"category": "ai-vocab"
+}
+]
+}

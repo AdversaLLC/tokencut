@@ -1,0 +1,19 @@
+[project]
+name = "tokencut"
+version = "0.8.2"
+description = "Stdlib-only token-saving toolkit: output filters, read guard, slop scorer, cost-aware + preference-aligned routing"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+
+[project.scripts]
+tokencut = "tokencut.cli:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["tokencut"]
+
+[tool.setuptools.package-data]
+tokencut = ["filters.json", "lexicon.json"]

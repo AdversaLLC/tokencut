@@ -1,0 +1,5164 @@
+{
+"ansible-playbook": {
+"name": "ansible-playbook",
+"version": 1,
+"description": "Condensed ansible-playbook: task results and recap",
+"match": {
+"command": "ansible-playbook",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "keep_lines",
+"pattern": "(PLAY|TASK|ok:|changed:|failed:|fatal:|unreachable:|skipping:|RECAP|ERROR)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more tasks"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"aws": {
+"name": "aws",
+"version": 1,
+"description": "Condensed AWS CLI output: truncated JSON responses",
+"match": {
+"command": "aws"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... response truncated"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"basedpyright": {
+"name": "basedpyright",
+"version": 2,
+"description": "Condensed basedpyright output: type errors",
+"match": {
+"command": "basedpyright",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "keep_lines",
+"pattern": "(error|warning|information|\\d+ errors?|\\d+ warnings?|\\d+ information)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more errors"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"biome": {
+"name": "biome",
+"version": 2,
+"description": "Condensed biome output: lint/format diagnostics",
+"match": {
+"command": "biome",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^(\\s*$|\\s+\\d+ \\|)"
+},
+{
+"action": "keep_lines",
+"pattern": "(error|warning|Fixed|Checked|diagnostics|invalid|\\u2716|\\u2714)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more diagnostics"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"brew-install": {
+"name": "brew-install",
+"version": 1,
+"description": "Condensed brew output: install/update summary",
+"match": {
+"command": "brew",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^==> (Downloading|Pouring|Fetching)|^###|^Already downloaded|^\\s*$)"
+},
+{
+"action": "keep_lines",
+"pattern": "(==>|Caveats|installed|Updated|already installed|Error|Warning|No formulae)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 20
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"bundle-install": {
+"name": "bundle-install",
+"version": 1,
+"description": "Condensed bundle install output",
+"match": {
+"command": "bundle",
+"subcommand": "install"
+},
+"pipeline": [
+{
+"action": "keep_lines",
+"pattern": "\\S"
+},
+{
+"action": "aggregate",
+"patterns": {
+"installed": "^Installing ",
+"using": "^Using ",
+"fetching": "^Fetching ",
+"complete": "^Bundle complete"
+},
+"format": "Bundle complete ({{.using}} cached, {{.installed}} installed)"
+}
+],
+"on_error": "passthrough",
+"_unsupported": [
+"aggregate"
+]
+},
+"cargo-build": {
+"name": "cargo-build",
+"version": 1,
+"description": "Condensed cargo build: removes compilation noise, keeps errors",
+"match": {
+"command": "cargo",
+"subcommand": "build"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*(Compiling|Downloading|Downloaded|Updating|Fresh|Blocking)"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "keep_lines",
+"pattern": "(^error|^warning|^ -->|Finished|aborting|could not compile|For more)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more errors"
+},
+{
+"action": "on_empty",
+"message": "ok (compiled)"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"cargo-check": {
+"name": "cargo-check",
+"version": 1,
+"description": "Condensed cargo check: type errors and warnings",
+"match": {
+"command": "cargo",
+"subcommand": "check"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*(Compiling|Checking|Downloading|Downloaded|Fresh|Blocking)"
+},
+{
+"action": "keep_lines",
+"pattern": "(^error|^warning|^ -->|Finished|could not compile|For more|generated \\d+)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more errors"
+},
+{
+"action": "on_empty",
+"message": "ok (no errors)"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"cargo-clippy": {
+"name": "cargo-clippy",
+"version": 1,
+"description": "Condensed cargo clippy: warnings and errors with locations",
+"match": {
+"command": "cargo",
+"subcommand": "clippy"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*(Compiling|Checking|Downloading|Downloaded|Fresh|Blocking)"
+},
+{
+"action": "keep_lines",
+"pattern": "(^error|^warning|^ -->|Finished|could not compile|For more|generated \\d+)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more warnings"
+},
+{
+"action": "on_empty",
+"message": "ok (no warnings)"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"cargo-install": {
+"name": "cargo-install",
+"version": 1,
+"description": "Condensed cargo install: install summary",
+"match": {
+"command": "cargo",
+"subcommand": "install"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*(Compiling|Downloading|Downloaded|Updating|Fresh)"
+},
+{
+"action": "keep_lines",
+"pattern": "(Installing|Installed|Replacing|error|warning|already installed)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 10
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"cargo-nextest": {
+"name": "cargo-nextest",
+"version": 1,
+"description": "Condensed cargo nextest: test results summary",
+"match": {
+"command": "cargo",
+"subcommand": "nextest"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*(Compiling|Downloading|Downloaded|Blocking|Fresh)"
+},
+{
+"action": "keep_lines",
+"pattern": "(PASS|FAIL|RETRY|ok|FAILED|Summary|\\d+ tests?|error|SIGTERM|TIMEOUT|Starting)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 40,
+"overflow_msg": "... more test output"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"cargo-test": {
+"name": "cargo-test",
+"version": 2,
+"description": "cargo test summary lines, plus the failure report when a test fails",
+"match": {
+"command": "cargo",
+"subcommand": "test"
+},
+"pipeline": [
+{
+"action": "remove_lines",
+"pattern": "^\\s*(Compiling|Downloading|Downloaded|Updating|Running|Executable)"
+},
+{
+"action": "keep_lines",
+"pattern": "\\S"
+},
+{
+"action": "state_machine",
+"states": {
+"start": {
+"keep": "^test result",
+"until": "^failures",
+"next": "failures"
+},
+"failures": {
+"keep": "."
+}
+}
+},
+{
+"action": "head",
+"n": 150
+},
+{
+"action": "format_template",
+"template": "{{.lines}}"
+}
+],
+"on_error": "passthrough",
+"tests": [
+{
+"name": "a passing run keeps only cargo's own result line",
+"input": "running 3 tests\ntest tests::adds ... ok\ntest tests::subs ... ok\ntest tests::muls ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\n",
+"expected": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\n"
+},
+{
+"name": "a failing run keeps the whole failure report",
+"input": "running 3 tests\ntest tests::adds ... ok\ntest tests::subs ... FAILED\ntest tests::muls ... ok\n\nfailures:\n\n---- tests::subs stdout ----\n\nthread 'tests::subs' panicked at src/lib.rs:12:9:\nassertion `left == right` failed\n  left: 3\n right: 4\n\nfailures:\n    tests::subs\n\ntest result: FAILED. 2 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n",
+"expected": "---- tests::subs stdout ----\nthread 'tests::subs' panicked at src/lib.rs:12:9:\nassertion `left == right` failed\n  left: 3\n right: 4\nfailures:\n    tests::subs\ntest result: FAILED. 2 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n"
+},
+{
+"name": "a panic message shaped like a test result is never counted, never deleted",
+"input": "running 2 tests\ntest tests::spoof ... FAILED\ntest tests::plain ... ok\n\nfailures:\n\n---- tests::spoof stdout ----\ntest spoofed::case ... ok\ntest result: ok. 99 passed; 8 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.99s\n\nthread 'tests::spoof' panicked at src/lib.rs:9:9:\nspoofing test still fails\n\nfailures:\n    tests::spoof\n\ntest result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n",
+"expected": "---- tests::spoof stdout ----\ntest spoofed::case ... ok\ntest result: ok. 99 passed; 8 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.99s\nthread 'tests::spoof' panicked at src/lib.rs:9:9:\nspoofing test still fails\nfailures:\n    tests::spoof\ntest result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n"
+},
+{
+"name": "quiet mode keeps cargo's own result line too",
+"input": "running 3 tests\n...\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\n",
+"expected": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\n"
+},
+{
+"name": "a multi-target run keeps one result line per target",
+"input": "running 2 tests\ntest tests::adds ... ok\ntest tests::muls ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\nrunning 1 test\ntest ok_integration_one ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n",
+"expected": "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n"
+},
+{
+"name": "the report keeps its tail, so cargo's own count survives",
+"input": "running 1 test\ntest tests::boom ... FAILED\n\nfailures:\n\n---- tests::boom stdout ----\nnoise 01\nnoise 02\nnoise 03\nnoise 04\nnoise 05\nnoise 06\nnoise 07\nnoise 08\nnoise 09\nnoise 10\nnoise 11\nnoise 12\nnoise 13\nnoise 14\nnoise 15\nnoise 16\nnoise 17\nnoise 18\nnoise 19\nnoise 20\nnoise 21\nnoise 22\nnoise 23\nnoise 24\nnoise 25\nnoise 26\nnoise 27\nnoise 28\nnoise 29\nnoise 30\nnoise 31\nnoise 32\nnoise 33\nnoise 34\nnoise 35\nnoise 36\nnoise 37\nnoise 38\nnoise 39\nnoise 40\nnoise 41\nnoise 42\nnoise 43\nnoise 44\nnoise 45\nnoise 46\nnoise 47\nnoise 48\nnoise 49\nnoise 50\nnoise 51\nnoise 52\nnoise 53\nnoise 54\nnoise 55\nnoise 56\nnoise 57\nnoise 58\nnoise 59\nnoise 60\nnoise 61\nnoise 62\n\nfailures:\n    tests::boom\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n",
+"expected": "---- tests::boom stdout ----\nnoise 01\nnoise 02\nnoise 03\nnoise 04\nnoise 05\nnoise 06\nnoise 07\nnoise 08\nnoise 09\nnoise 10\nnoise 11\nnoise 12\nnoise 13\nnoise 14\nnoise 15\nnoise 16\nnoise 17\nnoise 18\nnoise 19\nnoise 20\nnoise 21\nnoise 22\nnoise 23\nnoise 24\nnoise 25\nnoise 26\nnoise 27\nnoise 28\nnoise 29\nnoise 30\nnoise 31\nnoise 32\nnoise 33\nnoise 34\nnoise 35\nnoise 36\nnoise 37\nnoise 38\nnoise 39\nnoise 40\nnoise 41\nnoise 42\nnoise 43\nnoise 44\nnoise 45\nnoise 46\nnoise 47\nnoise 48\nnoise 49\nnoise 50\nnoise 51\nnoise 52\nnoise 53\nnoise 54\nnoise 55\nnoise 56\nnoise 57\nnoise 58\nnoise 59\nnoise 60\nnoise 61\nnoise 62\nfailures:\n    tests::boom\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n"
+}
+],
+"_unsupported": [
+"state_machine"
+]
+},
+"composer-install": {
+"name": "composer-install",
+"version": 1,
+"description": "Condensed composer output: install summary",
+"match": {
+"command": "composer",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^\\s*(- (Downloading|Installing|Updating)|Loading composer|Reading ))|^\\s*$"
+},
+{
+"action": "keep_lines",
+"pattern": "(Package operations|Nothing to|Lock file|Generating|error|warning|Writing)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 20
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"curl": {
+"name": "curl",
+"version": 1,
+"description": "Condensed curl output: response headers and body truncation",
+"match": {
+"command": "curl"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*(\\*|>|\\{|\\}) "
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... response truncated"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"df": {
+"name": "df",
+"version": 1,
+"description": "Condensed df output: removes virtual filesystems",
+"match": {
+"command": "df"
+},
+"pipeline": [
+{
+"action": "remove_lines",
+"pattern": "(^(tmpfs|devtmpfs|udev|none|overlay|shm) |^\\s*$)"
+},
+{
+"action": "truncate_lines",
+"max": 100
+},
+{
+"action": "head",
+"n": 20
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"diff": {
+"name": "diff",
+"version": 1,
+"description": "Condensed diff output: keeps change markers and context",
+"match": {
+"command": "diff"
+},
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 60,
+"overflow_msg": "... more changes"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"docker-build": {
+"name": "docker-build",
+"version": 4,
+"description": "Condensed docker build: step names, final result, and errors",
+"match": {
+"command": "docker",
+"subcommand": "build",
+"exclude_flags": [
+"--version",
+"-v"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*=> => "
+},
+{
+"action": "remove_lines",
+"pattern": "(^\\s*#\\d+ [0-9.]+ |sha256:|^Downloading|^Extracting|already being pulled|Pulling fs layer|Waiting|Pull complete|Digest:|downloading|extracting)"
+},
+{
+"action": "keep_lines",
+"pattern": "(^\\s*=>|^Step \\d+|^\\s*#\\d+ |^Successfully |^ERROR|^error|naming to|exporting to image|DONE|CACHED|writing image)"
+},
+{
+"action": "replace",
+"pattern": "^(\\s*#\\d+ \\[.+?\\]).*done$",
+"replacement": "$1 done"
+},
+{
+"action": "replace",
+"pattern": "^\\s+",
+"replacement": ""
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30,
+"overflow_msg": "... more steps truncated"
+}
+],
+"on_error": "passthrough",
+"tests": [
+{
+"name": "buildkit output",
+"input": "[+] Building 12.3s (8/8) FINISHED\n => [internal] load build definition from Dockerfile                       0.0s\n => => transferring dockerfile: 234B                                       0.0s\n => [internal] load .dockerignore                                          0.0s\n => => transferring context: 2B                                            0.0s\n => [1/3] FROM docker.io/library/node:18-alpine                            0.0s\n => CACHED [2/3] WORKDIR /app                                              0.0s\n => [3/3] COPY . .                                                         0.5s\n => => transferring context: 1.23MB                                        0.4s\n => exporting to image                                                     0.3s\n => => exporting layers                                                    0.2s\n => => writing image sha256:abc123                                         0.0s\n => => naming to docker.io/library/myapp:latest                            0.0s\n",
+"expected": "=> [internal] load build definition from Dockerfile                       0.0s\n=> [internal] load .dockerignore                                          0.0s\n=> [1/3] FROM docker.io/library/node:18-alpine                            0.0s\n=> CACHED [2/3] WORKDIR /app                                              0.0s\n=> [3/3] COPY . .                                                         0.5s\n=> exporting to image                                                     0.3s\n"
+},
+{
+"name": "build error",
+"input": "=> [internal] load build definition from Dockerfile                       0.0s\n=> [1/2] FROM docker.io/library/node:18                                   0.0s\n=> ERROR [2/2] RUN npm install                                            5.2s\n=> => npm ERR! code ERESOLVE\n",
+"expected": "=> [internal] load build definition from Dockerfile                       0.0s\n=> [1/2] FROM docker.io/library/node:18                                   0.0s\n=> ERROR [2/2] RUN npm install                                            5.2s\n"
+}
+],
+"_unsupported": []
+},
+"docker-compose": {
+"name": "docker-compose",
+"version": 1,
+"description": "Condensed docker-compose output: service status",
+"match": {
+"command": "docker-compose"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^\\s*(Pulling|Waiting|Extracting|Verifying|Pull complete|Digest:|Status:)|^\\s*$)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30,
+"overflow_msg": "... more output"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"docker-images": {
+"name": "docker-images",
+"version": 1,
+"description": "Condensed docker images: image list",
+"match": {
+"command": "docker",
+"subcommand": "images"
+},
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "truncate_lines",
+"max": 100
+},
+{
+"action": "head",
+"n": 30,
+"overflow_msg": "... more images"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"docker-logs": {
+"name": "docker-logs",
+"version": 1,
+"description": "Condensed docker logs: deduplicated log lines",
+"match": {
+"command": "docker",
+"subcommand": "logs"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "dedup",
+"normalize": [
+"\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}",
+"\\d+\\.\\d+\\.\\d+\\.\\d+"
+],
+"top": 30
+},
+{
+"action": "truncate_lines",
+"max": 120
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"docker-ps": {
+"name": "docker-ps",
+"version": 1,
+"description": "Condensed docker ps: container list with status",
+"match": {
+"command": "docker",
+"subcommand": "ps"
+},
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "truncate_lines",
+"max": 100
+},
+{
+"action": "head",
+"n": 30,
+"overflow_msg": "... more containers"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"dotnet-build": {
+"name": "dotnet-build",
+"version": 2,
+"description": "Condensed dotnet build: errors and build result",
+"match": {
+"command": "dotnet",
+"subcommand": "build"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*(Determining|Restored|Nothing to do|\\s*$)"
+},
+{
+"action": "keep_lines",
+"pattern": "(error |warning |Build succeeded|Build FAILED|\\d+ Error|\\d+ Warning|Time Elapsed)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more errors"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"dotnet-format": {
+"name": "dotnet-format",
+"version": 2,
+"description": "Condensed dotnet format: formatting issues",
+"match": {
+"command": "dotnet",
+"subcommand": "format"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30
+},
+{
+"action": "on_empty",
+"message": "ok (formatted)"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"dotnet-test": {
+"name": "dotnet-test",
+"version": 1,
+"description": "Condensed dotnet test: test results and failures",
+"match": {
+"command": "dotnet",
+"subcommand": "test"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*(Determining|Restored|Starting|\\s*$)"
+},
+{
+"action": "keep_lines",
+"pattern": "(Passed|Failed|Skipped|Total tests|error|Error|Test Run|Duration|\\d+ passed|\\d+ failed)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 40,
+"overflow_msg": "... more test output"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"du": {
+"name": "du",
+"version": 1,
+"description": "Condensed du output: largest entries first",
+"match": {
+"command": "du"
+},
+"pipeline": [
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "head",
+"n": 30,
+"overflow_msg": "... more entries"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"eslint": {
+"name": "eslint",
+"version": 4,
+"description": "Condensed eslint output: file errors and summary",
+"match": {
+"command": "eslint",
+"exclude_flags": [
+"-f",
+"--format",
+"--version"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "remove_lines",
+"pattern": "potentially fixable"
+},
+{
+"action": "keep_lines",
+"pattern": "(^/|^\\s+\\d+:\\d+|problems?|\\d+ errors?|\\d+ warnings?)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more errors truncated"
+},
+{
+"action": "on_empty",
+"message": "ok (no lint errors)"
+}
+],
+"on_error": "passthrough",
+"tests": [
+{
+"name": "no errors produces ok",
+"input": "",
+"expected": "ok (no lint errors)\n"
+},
+{
+"name": "errors with summary",
+"input": "/home/user/project/src/file.js\n  1:10  error    Unexpected var, use let or const instead  no-var\n  2:5   warning  Missing semicolon                          semi\n\n/home/user/project/src/other.js\n  3:1   error    Parsing error: Unexpected token\n\n\u2716 3 problems (2 errors, 1 warning)\n  1 error and 0 warnings potentially fixable with the `--fix` option.\n",
+"expected": "/home/user/project/src/file.js\n  1:10  error    Unexpected var, use let or const instead  no-var\n  2:5   warning  Missing semicolon                          semi\n/home/user/project/src/other.js\n  3:1   error    Parsing error: Unexpected token\n\u2716 3 problems (2 errors, 1 warning)\n"
+},
+{
+"name": "single file error",
+"input": "/app/src/index.js\n  5:3  error  'x' is defined but never used  no-unused-vars\n\n\u2716 1 problem (1 error, 0 warnings)\n",
+"expected": "/app/src/index.js\n  5:3  error  'x' is defined but never used  no-unused-vars\n\u2716 1 problem (1 error, 0 warnings)\n"
+}
+],
+"_unsupported": []
+},
+"fail2ban": {
+"name": "fail2ban",
+"version": 1,
+"description": "Condensed fail2ban-client output",
+"match": {
+"command": "fail2ban-client"
+},
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "truncate_lines",
+"max": 100
+},
+{
+"action": "head",
+"n": 20
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"find": {
+"name": "find",
+"version": 2,
+"description": "Condensed find output: truncates long paths and limits results",
+"match": {
+"command": "find"
+},
+"pipeline": [
+{
+"action": "truncate_lines",
+"max": 100
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more files"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"g++": {
+"name": "g++",
+"version": 2,
+"description": "Condensed g++ output: errors and warnings",
+"match": {
+"command": "g++",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "keep_lines",
+"pattern": "(error:|warning:|note:|fatal error|undefined reference|linker|ld:|In function)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more errors"
+},
+{
+"action": "on_empty",
+"message": "ok (compiled)"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"gcc": {
+"name": "gcc",
+"version": 2,
+"description": "Condensed gcc/g++ output: errors and warnings",
+"match": {
+"command": "gcc",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "keep_lines",
+"pattern": "(error:|warning:|note:|fatal error|undefined reference|linker|ld:|In function)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more errors"
+},
+{
+"action": "on_empty",
+"message": "ok (compiled)"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"gcloud": {
+"name": "gcloud",
+"version": 1,
+"description": "Condensed gcloud output: results and errors",
+"match": {
+"command": "gcloud"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^WARNING:|^\\s*$)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 40,
+"overflow_msg": "... more output"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"gh-issue": {
+"name": "gh-issue",
+"version": 1,
+"description": "Condensed gh issue output: issue list/view summary",
+"match": {
+"command": "gh",
+"subcommand": "issue"
+},
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30,
+"overflow_msg": "... more issues"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"gh-pr": {
+"name": "gh-pr",
+"version": 1,
+"description": "Condensed gh pr output: PR list/view summary",
+"match": {
+"command": "gh",
+"subcommand": "pr",
+"exclude_flags": [
+"diff"
+]
+},
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30,
+"overflow_msg": "... more PRs"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"gh-run": {
+"name": "gh-run",
+"version": 1,
+"description": "Condensed gh run output: workflow run status",
+"match": {
+"command": "gh",
+"subcommand": "run"
+},
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30,
+"overflow_msg": "... more runs"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"git-add": {
+"name": "git-add",
+"version": 1,
+"description": "Condensed git add: returns ok on success, shows errors",
+"match": {
+"command": "git",
+"subcommand": "add"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "on_empty",
+"message": "ok"
+}
+],
+"on_error": "passthrough",
+"tests": [
+{
+"name": "empty input returns ok",
+"input": "",
+"expected": "ok\n"
+}
+],
+"_unsupported": []
+},
+"git-branch": {
+"name": "git-branch",
+"version": 1,
+"description": "Condensed git branch: branch list with current highlighted",
+"match": {
+"command": "git",
+"subcommand": "branch",
+"exclude_flags": [
+"-d",
+"-D",
+"-m",
+"-M",
+"--delete",
+"--move",
+"--copy"
+]
+},
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "keep_lines",
+"pattern": "\\S"
+},
+{
+"action": "head",
+"n": 20,
+"overflow_msg": "... more branches"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"git-commit": {
+"name": "git-commit",
+"version": 1,
+"description": "Condensed git commit: branch, hash, and change summary",
+"match": {
+"command": "git",
+"subcommand": "commit"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "keep_lines",
+"pattern": "(^\\[|file.? changed|insertions?|deletions?|create mode|delete mode|rename|nothing to commit|error|fatal|On branch)"
+},
+{
+"action": "truncate_lines",
+"max": 100
+},
+{
+"action": "head",
+"n": 10
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"git-diff": {
+"name": "git-diff",
+"version": 2,
+"description": "git diff reduced to a diffstat; the patch body is not produced",
+"match": {
+"command": "git",
+"subcommand": "diff",
+"exclude_flags": [
+"--stat",
+"--shortstat",
+"--numstat",
+"--name-only",
+"--name-status",
+"-p",
+"--patch",
+"-U",
+"--unified"
+]
+},
+"inject": {
+"args": [
+"--stat",
+"--stat-count=30"
+],
+"skip_if_present": [
+"--stat",
+"--name-only",
+"--name-status"
+]
+},
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "keep_lines",
+"pattern": "\\S"
+},
+{
+"action": "truncate_lines",
+"max": 100,
+"ellipsis": "..."
+},
+{
+"action": "head",
+"n": 40,
+"overflow_msg": "... more lines (truncated by snip)"
+},
+{
+"action": "format_template",
+"template": "diffstat only, patch not produced. Full patch: git diff -p\n{{.lines}}"
+}
+],
+"on_error": "passthrough",
+"tests": [
+{
+"name": "git's own summary is kept and snip invents no file count",
+"input": "a.txt | 2 +-\nb.txt | 2 +-\nc.txt | 2 +-\n3 files changed, 3 insertions(+), 3 deletions(-)\n",
+"expected": "diffstat only, patch not produced. Full patch: git diff -p\na.txt | 2 +-\nb.txt | 2 +-\nc.txt | 2 +-\n3 files changed, 3 insertions(+), 3 deletions(-)\n"
+},
+{
+"name": "single-file diff keeps git's singular wording",
+"input": "a.txt | 2 +-\n1 file changed, 1 insertion(+), 1 deletion(-)\n",
+"expected": "diffstat only, patch not produced. Full patch: git diff -p\na.txt | 2 +-\n1 file changed, 1 insertion(+), 1 deletion(-)\n"
+},
+{
+"name": "capped diff keeps git's overflow marker and its true total",
+"input": "f01.txt | 2 +-\nf02.txt | 2 +-\nf03.txt | 2 +-\nf04.txt | 2 +-\nf05.txt | 2 +-\nf06.txt | 2 +-\nf07.txt | 2 +-\nf08.txt | 2 +-\nf09.txt | 2 +-\nf10.txt | 2 +-\nf11.txt | 2 +-\nf12.txt | 2 +-\nf13.txt | 2 +-\nf14.txt | 2 +-\nf15.txt | 2 +-\nf16.txt | 2 +-\nf17.txt | 2 +-\nf18.txt | 2 +-\nf19.txt | 2 +-\nf20.txt | 2 +-\nf21.txt | 2 +-\nf22.txt | 2 +-\nf23.txt | 2 +-\nf24.txt | 2 +-\nf25.txt | 2 +-\nf26.txt | 2 +-\nf27.txt | 2 +-\nf28.txt | 2 +-\nf29.txt | 2 +-\nf30.txt | 2 +-\n...\n40 files changed, 40 insertions(+), 40 deletions(-)\n",
+"expected": "diffstat only, patch not produced. Full patch: git diff -p\nf01.txt | 2 +-\nf02.txt | 2 +-\nf03.txt | 2 +-\nf04.txt | 2 +-\nf05.txt | 2 +-\nf06.txt | 2 +-\nf07.txt | 2 +-\nf08.txt | 2 +-\nf09.txt | 2 +-\nf10.txt | 2 +-\nf11.txt | 2 +-\nf12.txt | 2 +-\nf13.txt | 2 +-\nf14.txt | 2 +-\nf15.txt | 2 +-\nf16.txt | 2 +-\nf17.txt | 2 +-\nf18.txt | 2 +-\nf19.txt | 2 +-\nf20.txt | 2 +-\nf21.txt | 2 +-\nf22.txt | 2 +-\nf23.txt | 2 +-\nf24.txt | 2 +-\nf25.txt | 2 +-\nf26.txt | 2 +-\nf27.txt | 2 +-\nf28.txt | 2 +-\nf29.txt | 2 +-\nf30.txt | 2 +-\n...\n40 files changed, 40 insertions(+), 40 deletions(-)\n"
+}
+],
+"_unsupported": []
+},
+"git-fetch": {
+"name": "git-fetch",
+"version": 1,
+"description": "Condensed git fetch: new refs or ok",
+"match": {
+"command": "git",
+"subcommand": "fetch"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "on_empty",
+"message": "ok (no new changes)"
+},
+{
+"action": "head",
+"n": 20,
+"overflow_msg": "... more refs"
+}
+],
+"on_error": "passthrough",
+"tests": [
+{
+"name": "empty input returns ok (no new changes)",
+"input": "",
+"expected": "ok (no new changes)\n"
+}
+],
+"_unsupported": []
+},
+"git-log": {
+"name": "git-log",
+"version": 2,
+"description": "Condense git log to hash + message + author + date",
+"match": {
+"command": "git",
+"subcommand": "log",
+"exclude_flags": [
+"--format",
+"--pretty",
+"--graph",
+"--oneline",
+"-p",
+"--patch",
+"--stat",
+"--numstat",
+"--name-only",
+"--name-status"
+]
+},
+"inject": {
+"args": [
+"--pretty=format:%h %s (%ar) <%an>"
+],
+"defaults": {
+"-n": "10"
+},
+"skip_if_present": [
+"--format",
+"--pretty",
+"--oneline"
+]
+},
+"pipeline": [
+{
+"action": "keep_lines",
+"pattern": "\\S"
+},
+{
+"action": "truncate_lines",
+"max": 80,
+"ellipsis": "..."
+},
+{
+"action": "format_template",
+"template": "{{.count}} commits:\n{{.lines}}"
+}
+],
+"on_error": "passthrough",
+"tests": [
+{
+"name": "merge commits are kept and the count matches what is shown",
+"input": "25b7589 Merge pull request #131 from user/pin (16 minutes ago) <Edouard>\neb5fc8c refactor(engine): extract resultFrom (41 minutes ago) <Edouard>\n0b337a9 fix(filter): truncate_bytes respects its cap (42 minutes ago) <Edouard>\n",
+"expected": "3 commits:\n25b7589 Merge pull request #131 from user/pin (16 minutes ago) <Edouard>\neb5fc8c refactor(engine): extract resultFrom (41 minutes ago) <Edouard>\n0b337a9 fix(filter): truncate_bytes respects its cap (42 minutes ago) <Edouard>\n"
+}
+],
+"_unsupported": []
+},
+"git-pull": {
+"name": "git-pull",
+"version": 1,
+"description": "Condensed git pull: merge summary and conflicts",
+"match": {
+"command": "git",
+"subcommand": "pull"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^(remote:|From |\\s*$)"
+},
+{
+"action": "keep_lines",
+"pattern": "(Already up|Updating|Fast-forward|file.? changed|insertions?|deletions?|->|CONFLICT|error|fatal|Merge|rebase|Rewinding)"
+},
+{
+"action": "truncate_lines",
+"max": 100
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"git-push": {
+"name": "git-push",
+"version": 1,
+"description": "Condensed git push: branch status and errors",
+"match": {
+"command": "git",
+"subcommand": "push"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "keep_lines",
+"pattern": "(->|up-to-date|Everything|error|fatal|rejected|\\[new|forced update|\\.\\.)"
+},
+{
+"action": "truncate_lines",
+"max": 100
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"git-show": {
+"name": "git-show",
+"version": 2,
+"description": "git show reduced to commit header and diffstat; the patch body is not produced",
+"match": {
+"command": "git",
+"subcommand": "show",
+"exclude_flags": [
+"--stat",
+"--format",
+"--pretty",
+"--name-only",
+"--name-status",
+"-p",
+"--patch",
+"-U",
+"--unified"
+]
+},
+"inject": {
+"args": [
+"--stat",
+"--stat-count=30"
+],
+"skip_if_present": [
+"--stat",
+"--format",
+"--pretty",
+"--name-only",
+"--name-status"
+]
+},
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "keep_lines",
+"pattern": "\\S"
+},
+{
+"action": "head",
+"n": 45,
+"overflow_msg": "... more lines (truncated by snip)"
+},
+{
+"action": "format_template",
+"template": "diffstat only, patch not produced. Full patch: git show -p <rev>\n{{.lines}}"
+}
+],
+"on_error": "passthrough",
+"tests": [
+{
+"name": "commit header and diffstat are kept and labelled as a substitution",
+"input": "commit eb5fc8c97545f66f319143470651703aaee53991\nAuthor: Repro <r@example.com>\nDate:   Sun Jul 26 08:38:02 2026 +0400\n\n    refactor(engine): extract resultFrom\n\n internal/engine/executor.go | 52 +++++++++++++++-----------\n 1 file changed, 32 insertions(+), 20 deletions(-)\n",
+"expected": "diffstat only, patch not produced. Full patch: git show -p <rev>\ncommit eb5fc8c97545f66f319143470651703aaee53991\nAuthor: Repro <r@example.com>\nDate:   Sun Jul 26 08:38:02 2026 +0400\n    refactor(engine): extract resultFrom\n internal/engine/executor.go | 52 +++++++++++++++-----------\n 1 file changed, 32 insertions(+), 20 deletions(-)\n"
+}
+],
+"_unsupported": []
+},
+"git-stash": {
+"name": "git-stash",
+"version": 1,
+"description": "Condensed git stash: operation summary",
+"match": {
+"command": "git",
+"subcommand": "stash"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "keep_lines",
+"pattern": "(Saved|Dropped|stash@|Already|On branch|CONFLICT|error|fatal|No stash|No local changes)"
+},
+{
+"action": "head",
+"n": 15
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"git-status": {
+"name": "git-status",
+"version": 2,
+"description": "Compact git status: porcelain lines plus status code summary",
+"match": {
+"command": "git",
+"subcommand": "status",
+"exclude_flags": [
+"--porcelain",
+"--short",
+"-s"
+]
+},
+"inject": {
+"args": [
+"--porcelain"
+],
+"skip_if_present": [
+"--porcelain",
+"--short",
+"-s"
+]
+},
+"pipeline": [
+{
+"action": "keep_lines",
+"pattern": "\\S"
+},
+{
+"action": "group_by",
+"pattern": "^(.{2})",
+"format": "{{.Key}}: {{.Count}}",
+"append": true
+}
+],
+"on_error": "passthrough",
+"tests": [
+{
+"name": "porcelain output preserves filenames and appends status summary",
+"input": "M  internal/cli/cli.go\nM  internal/engine/pipeline.go\nA  internal/filter/kubectl.go\n?? filters/kubectl-get-pods.yaml\n?? docs/kubectl-filters.md\n",
+"expected": "M  internal/cli/cli.go\nM  internal/engine/pipeline.go\nA  internal/filter/kubectl.go\n?? filters/kubectl-get-pods.yaml\n?? docs/kubectl-filters.md\nM : 2\n??: 2\nA : 1\n"
+}
+],
+"_unsupported": [
+"group_by"
+]
+},
+"git-worktree": {
+"name": "git-worktree",
+"version": 1,
+"description": "Condensed git worktree output",
+"match": {
+"command": "git",
+"subcommand": "worktree"
+},
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "keep_lines",
+"pattern": "\\S"
+},
+{
+"action": "head",
+"n": 20
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"go-build": {
+"name": "go-build",
+"version": 1,
+"description": "Condensed go build: errors only, ok on success",
+"match": {
+"command": "go",
+"subcommand": "build"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 40,
+"overflow_msg": "... more errors"
+},
+{
+"action": "on_empty",
+"message": "ok (compiled)"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"go-test": {
+"name": "go-test",
+"version": 1,
+"description": "Condensed go test output with pass/fail summary",
+"match": {
+"command": "go",
+"subcommand": "test",
+"exclude_flags": [
+"-json",
+"-v",
+"-bench",
+"-run"
+]
+},
+"inject": {
+"args": [
+"-json"
+],
+"skip_if_present": [
+"-json",
+"-v",
+"-bench"
+]
+},
+"pipeline": [
+{
+"action": "keep_lines",
+"pattern": "\\S"
+},
+{
+"action": "keep_lines",
+"pattern": "\"Test\":\""
+},
+{
+"action": "keep_lines",
+"pattern": "\"Action\":\"(pass|fail)\""
+},
+{
+"action": "aggregate",
+"patterns": {
+"passed": "\"Action\":\"pass\"",
+"failed": "\"Action\":\"fail\""
+},
+"format": "{{if and (eq .passed 0) (eq .failed 0)}}No tests found{{else}}{{.passed}} passed, {{.failed}} failed{{end}}"
+}
+],
+"on_error": "passthrough",
+"_unsupported": [
+"aggregate"
+]
+},
+"go-vet": {
+"name": "go-vet",
+"version": 2,
+"description": "Condensed go vet: issues by file",
+"match": {
+"command": "go",
+"subcommand": "vet"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^#\\s"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 40,
+"overflow_msg": "... more issues"
+},
+{
+"action": "on_empty",
+"message": "ok (no issues)"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"golangci-lint": {
+"name": "golangci-lint",
+"version": 2,
+"description": "Condensed golangci-lint: issues grouped by file",
+"match": {
+"command": "golangci-lint"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^(level=|WARN|INFO|DEBUG)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more issues"
+},
+{
+"action": "on_empty",
+"message": "ok (0 issues)"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"gradle": {
+"name": "gradle",
+"version": 1,
+"description": "Condensed gradle output: build result and errors",
+"match": {
+"command": "gradle",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^> Task |^\\s*$|^Downloading|^\\.\\.\\.|^Starting)"
+},
+{
+"action": "keep_lines",
+"pattern": "(BUILD|FAILURE|ERROR|error:|warning:|FAILED|UP-TO-DATE|actionable|Test result)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 40
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"gradlew-bat": {
+"name": "gradlew-bat",
+"version": 1,
+"description": "Condensed gradle wrapper output on Windows (.bat): build result and errors",
+"match": {
+"command": "gradlew.bat",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^> Task |^\\s*$|^Downloading|^\\.\\.\\.|^Starting)"
+},
+{
+"action": "keep_lines",
+"pattern": "(BUILD|FAILURE|ERROR|error:|warning:|FAILED|UP-TO-DATE|actionable|Test result)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 40
+}
+],
+"on_error": "passthrough",
+"tests": [
+{
+"name": "build success",
+"input": "> Task :compileJava\n> Task :processResources\n> Task :classes\n> Task :jar\n\nBUILD SUCCESSFUL in 2s\n5 actionable tasks: 5 executed\n",
+"expected": "BUILD SUCCESSFUL in 2s\n5 actionable tasks: 5 executed\n"
+},
+{
+"name": "build failure with error",
+"input": "> Task :compileJava FAILED\n> Task :processResources UP-TO-DATE\n\nFAILURE: Build failed with an exception.\n\n* What went wrong:\nExecution failed for task ':compileJava'.\n> Compilation error: package com.example does not exist\n\nBUILD FAILED in 1s\n",
+"expected": "FAILURE: Build failed with an exception.\n> Compilation error: package com.example does not exist\nBUILD FAILED in 1s\n"
+},
+{
+"name": "download and start noise removed",
+"input": "Downloading https://services.gradle.org/distributions/gradle-8.5-bin.zip\n.......................................................\nStarting a Gradle Daemon (subsequent builds will be faster)\n\n> Task :test\nTest result: FAILURE\n\nBUILD FAILED in 5s\n",
+"expected": "Test result: FAILURE\nBUILD FAILED in 5s\n"
+}
+],
+"_unsupported": []
+},
+"gradlew": {
+"name": "gradlew",
+"version": 1,
+"description": "Condensed gradle wrapper output: build result and errors",
+"match": {
+"command": "gradlew",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^> Task |^\\s*$|^Downloading|^\\.\\.\\.|^Starting)"
+},
+{
+"action": "keep_lines",
+"pattern": "(BUILD|FAILURE|ERROR|error:|warning:|FAILED|UP-TO-DATE|actionable|Test result)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 40
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"grep": {
+"name": "grep",
+"version": 2,
+"description": "Condensed grep output: limits results",
+"match": {
+"command": "grep"
+},
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more matches"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"gt": {
+"name": "gt",
+"version": 1,
+"description": "Condensed Graphite (gt) output: stack status",
+"match": {
+"command": "gt"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"hadolint": {
+"name": "hadolint",
+"version": 1,
+"description": "Condensed hadolint output: Dockerfile lint issues",
+"match": {
+"command": "hadolint"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30,
+"overflow_msg": "... more issues"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"helm": {
+"name": "helm",
+"version": 1,
+"description": "Condensed helm output: release status and errors",
+"match": {
+"command": "helm"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30,
+"overflow_msg": "... more output"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"iptables": {
+"name": "iptables",
+"version": 1,
+"description": "Condensed iptables output: rules summary",
+"match": {
+"command": "iptables"
+},
+"pipeline": [
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "truncate_lines",
+"max": 100
+},
+{
+"action": "head",
+"n": 30,
+"overflow_msg": "... more rules"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"jest": {
+"name": "jest",
+"version": 3,
+"description": "Condensed jest output: suite results, assertion details, and summary",
+"match": {
+"command": "jest",
+"exclude_flags": [
+"--json",
+"--verbose",
+"--version"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s+at "
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s+\\d+ \\|"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s+\\|\\s+\\^"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s+console\\."
+},
+{
+"action": "remove_lines",
+"pattern": "Ran all test suites"
+},
+{
+"action": "remove_lines",
+"pattern": "^Snapshot Summary"
+},
+{
+"action": "keep_lines",
+"pattern": "(PASS|FAIL|Tests:|Test Suites:|Time:|expect|Expected|Received|\u25cf|thrown:)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 40,
+"overflow_msg": "... more output truncated"
+}
+],
+"on_error": "passthrough",
+"tests": [
+{
+"name": "all passing",
+"input": "PASS  src/__tests__/utils.test.js\nPASS  src/__tests__/main.test.js\n\nTest Suites: 2 passed, 2 total\nTests:       5 passed, 5 total\nSnapshots:   0 total\nTime:        1.234 s\n",
+"expected": "PASS  src/__tests__/utils.test.js\nPASS  src/__tests__/main.test.js\nTest Suites: 2 passed, 2 total\nTests:       5 passed, 5 total\nTime:        1.234 s\n"
+},
+{
+"name": "with failures and stack traces",
+"input": "PASS  src/__tests__/utils.test.js\nFAIL  src/__tests__/main.test.js\n  \u25cf Main > should return correct value\n\n    expect(received).toBe(expected)\n\n    Expected: 4\n    Received: 3\n\n      5 |   test('should return correct value', () => {\n      6 |     expect(calculate(2, 2)).toBe(4);\n        |                             ^\n      7 |   });\n\n    at Object.<anonymous> (src/__tests__/main.test.js:6:29)\n\nTest Suites: 1 failed, 1 passed, 2 total\nTests:       1 failed, 3 passed, 4 total\nSnapshots:   0 total\nTime:        1.234 s\nRan all test suites.\n",
+"expected": "PASS  src/__tests__/utils.test.js\nFAIL  src/__tests__/main.test.js\n  \u25cf Main > should return correct value\n    expect(received).toBe(expected)\n    Expected: 4\n    Received: 3\nTest Suites: 1 failed, 1 passed, 2 total\nTests:       1 failed, 3 passed, 4 total\nTime:        1.234 s\n"
+}
+],
+"_unsupported": []
+},
+"jira": {
+"name": "jira",
+"version": 1,
+"description": "Condensed jira CLI output",
+"match": {
+"command": "jira"
+},
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"jj": {
+"name": "jj",
+"version": 1,
+"description": "Condensed jj (Jujutsu VCS) output",
+"match": {
+"command": "jj"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"jq": {
+"name": "jq",
+"version": 1,
+"description": "Condensed jq output: truncated JSON",
+"match": {
+"command": "jq"
+},
+"pipeline": [
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more output"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"just": {
+"name": "just",
+"version": 1,
+"description": "Condensed just output: task results",
+"match": {
+"command": "just"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 40,
+"overflow_msg": "... more output"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"kubectl-get": {
+"name": "kubectl-get",
+"version": 2,
+"description": "Condensed kubectl output: resources with status",
+"match": {
+"command": "kubectl"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "truncate_lines",
+"max": 100
+},
+{
+"action": "head",
+"n": 30,
+"overflow_msg": "... more resources truncated"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"kubectl-logs": {
+"name": "kubectl-logs",
+"version": 1,
+"description": "Condensed kubectl logs: deduplicated and truncated",
+"match": {
+"command": "kubectl",
+"subcommand": "logs"
+},
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "dedup",
+"normalize": [
+"\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}",
+"\\d+\\.\\d+\\.\\d+\\.\\d+"
+],
+"top": 30
+},
+{
+"action": "truncate_lines",
+"max": 120
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"liquibase": {
+"name": "liquibase",
+"version": 1,
+"description": "Condensed liquibase output: migration status",
+"match": {
+"command": "liquibase",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^\\s*(Starting|Running|Liquibase \\d)|^\\s*$)"
+},
+{
+"action": "keep_lines",
+"pattern": "(Successfully|FAILED|Error|ChangeSet|executed|rolled back|UPDATE|Tag)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"ls": {
+"name": "ls",
+"version": 3,
+"description": "Compact ls output: reformats long listings to date+name+size, removes noise, extension summary",
+"match": {
+"command": "ls"
+},
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^total\\s"
+},
+{
+"action": "remove_lines",
+"pattern": "(?:^|\\s)\\.\\.?$"
+},
+{
+"action": "replace",
+"pattern": "^\\S+\\s+\\d+\\s+.*\\s(\\d\\S*)\\s+(\\S+\\s+\\S+\\s+[\\d:]{4,5})\\s+(.+)$",
+"replacement": "$2  $3  $1"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 300,
+"overflow_msg": "... +more entries (truncated by snip)"
+},
+{
+"action": "group_by",
+"pattern": "[^\\s.]\\.([a-zA-Z][a-zA-Z0-9]*)(?:\\s|$)",
+"format": "{{.Key}}: {{.Count}}",
+"top": 8,
+"append": true
+}
+],
+"on_error": "passthrough",
+"tests": [
+{
+"name": "summary excludes hidden directories and dotfiles without extensions",
+"input": "total 16\ndrwxr-xr-x  3 user staff   96 Apr 23 14:13 .claude\ndrwxr-xr-x 15 user staff  480 Apr 28 09:19 .git\n-rw-r--r--  1 user staff  171 Apr 23 13:47 .mcp.json\n-rw-r--r--  1 user staff 1234 Apr 28 10:00 README.md\n-rw-r--r--  1 user staff  500 Apr 28 09:19 main.go\n",
+"expected": "Apr 23 14:13  .claude  96\nApr 28 09:19  .git  480\nApr 23 13:47  .mcp.json  171\nApr 28 10:00  README.md  1234\nApr 28 09:19  main.go  500\njson: 1\nmd: 1\ngo: 1\n"
+},
+{
+"name": "cygwin two-word group is parsed correctly",
+"input": "total 104617\ndrwxrwx---+  1 jspelletier Domain Users     0 Apr 28 09:19 .\ndrwxrwx---+  1 jspelletier Domain Users     0 Dec 11 10:20 ..\n-rwxrwx---+  1 jspelletier Domain Users   171 Apr 23 13:47 .mcp.json\n-r--r--r--   1 jspelletier Domain Users  1234 Apr 28 10:00 README.md\n",
+"expected": "Apr 23 13:47  .mcp.json  171\nApr 28 10:00  README.md  1234\njson: 1\nmd: 1\n"
+},
+{
+"name": "cygwin actual user output with ACL+ marker and year column",
+"input": "total 104617\ndrwxrwx---+  1 jspelletier     Domain Users        0 Apr 28 09:19 .\ndrwxrwx---+  1 jspelletier     Domain Users        0 Dec 11 10:20 ..\n-r-xr-x---+  2 jspelletier     Domain Users     8429 Jan 30  2024 .clang-format\ndrwxrwx---+  1 jspelletier     Domain Users        0 Apr 23 14:13 .claude\n-r-xr-x---+  1 jspelletier     Domain Users     9020 Jul 22  2025 .editorconfig\n-rwxrwx---+  1 jspelletier     Domain Users      171 Apr 23 13:47 .mcp.json\n",
+"expected": "Jan 30  2024  .clang-format  8429\nApr 23 14:13  .claude  0\nJul 22  2025  .editorconfig  9020\nApr 23 13:47  .mcp.json  171\njson: 1\n"
+}
+],
+"_unsupported": [
+"group_by"
+]
+},
+"make": {
+"name": "make",
+"version": 2,
+"description": "Condensed make output: removes directory navigation noise",
+"match": {
+"command": "make"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^make\\[\\d+\\]: (Entering|Leaving) directory"
+},
+{
+"action": "remove_lines",
+"pattern": "^(Nothing to be done for|make\\[\\d+\\]: Nothing to be done)"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more output truncated"
+},
+{
+"action": "on_empty",
+"message": "ok"
+}
+],
+"on_error": "passthrough",
+"tests": [
+{
+"name": "directory noise removed",
+"input": "make[1]: Entering directory '/home/user/project'\ngcc -o main main.c\nmake[1]: Leaving directory '/home/user/project'\n",
+"expected": "gcc -o main main.c\n"
+},
+{
+"name": "empty output returns ok",
+"input": "",
+"expected": "ok\n"
+}
+],
+"_unsupported": []
+},
+"markdownlint-cli2": {
+"name": "markdownlint-cli2",
+"version": 2,
+"description": "Condensed markdownlint-cli2 output: issues by file",
+"match": {
+"command": "markdownlint-cli2"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^markdownlint-cli2 v"
+},
+{
+"action": "remove_lines",
+"pattern": "^(Finding|Linting): "
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30,
+"overflow_msg": "... more issues"
+},
+{
+"action": "on_empty",
+"message": "Summary: 0 error(s)"
+}
+],
+"on_error": "passthrough",
+"tests": [
+{
+"name": "banner removed, issues and summary kept",
+"input": "markdownlint-cli2 v0.13.0 (markdownlint v0.34.0)\nFinding: **/*.md\nLinting: 3 file(s)\nSummary: 2 error(s)\nREADME.md:12 MD013/line-length Line length [Expected: 80; Actual: 95]\ndocs/guide.md:5:1 MD022/blanks-around-headings Headings should be surrounded by blank lines\n",
+"expected": "Summary: 2 error(s)\nREADME.md:12 MD013/line-length Line length [Expected: 80; Actual: 95]\ndocs/guide.md:5:1 MD022/blanks-around-headings Headings should be surrounded by blank lines\n"
+},
+{
+"name": "clean run keeps only the summary",
+"input": "markdownlint-cli2 v0.13.0 (markdownlint v0.34.0)\nFinding: **/*.md\nLinting: 3 file(s)\nSummary: 0 error(s)\n",
+"expected": "Summary: 0 error(s)\n"
+}
+],
+"_unsupported": []
+},
+"markdownlint": {
+"name": "markdownlint",
+"version": 2,
+"description": "Condensed markdownlint output: issues by file",
+"match": {
+"command": "markdownlint"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30,
+"overflow_msg": "... more issues"
+},
+{
+"action": "on_empty",
+"message": "ok (no issues)"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"mise": {
+"name": "mise",
+"version": 1,
+"description": "Condensed mise output: tool status",
+"match": {
+"command": "mise"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 20
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"mix-compile": {
+"name": "mix-compile",
+"version": 2,
+"description": "Condensed mix compile output: errors and warnings",
+"match": {
+"command": "mix",
+"subcommand": "compile"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^Compiling \\d+ file|^Generated |^\\s*$)"
+},
+{
+"action": "keep_lines",
+"pattern": "(error|warning|\\*\\* )"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 40
+},
+{
+"action": "on_empty",
+"message": "ok (compiled)"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"mix-format": {
+"name": "mix-format",
+"version": 2,
+"description": "Condensed mix format output",
+"match": {
+"command": "mix",
+"subcommand": "format"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 20
+},
+{
+"action": "on_empty",
+"message": "ok (formatted)"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"mvn": {
+"name": "mvn",
+"version": 1,
+"description": "Condensed maven output: build result and errors",
+"match": {
+"command": "mvn",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^\\[INFO\\] Downloading|^\\[INFO\\] Downloaded|^\\[INFO\\] ---|^\\s*$)"
+},
+{
+"action": "keep_lines",
+"pattern": "(BUILD|FAILURE|ERROR|\\[ERROR\\]|\\[WARNING\\]|Tests run:|Total time:|Reactor Summary)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 40
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"mypy": {
+"name": "mypy",
+"version": 2,
+"description": "Condensed mypy output: type errors by file",
+"match": {
+"command": "mypy"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more errors"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"next-build": {
+"name": "next-build",
+"version": 1,
+"description": "Condensed next.js build output: pages and errors",
+"match": {
+"command": "next",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^\\s*$|^\\s+info|Compiling|Collecting page data)"
+},
+{
+"action": "keep_lines",
+"pattern": "(Route|Size|First Load|error|Error|warn|\\u25cb|\\u25cf|\\u03bb|\\u2714|Creating|Generating|Build error|Linting)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 40,
+"overflow_msg": "... more routes"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"npm-install": {
+"name": "npm-install",
+"version": 4,
+"description": "Condensed npm dependency-change output: summary and errors only",
+"match": {
+"command": "npm",
+"subcommand": [
+"install",
+"add",
+"i",
+"in",
+"ins",
+"inst",
+"insta",
+"instal",
+"isnt",
+"isnta",
+"isntal",
+"isntall",
+"ci",
+"clean-install",
+"ic",
+"install-clean",
+"isntall-clean",
+"update",
+"up",
+"upgrade",
+"udpate",
+"uninstall",
+"unlink",
+"remove",
+"rm",
+"r",
+"un"
+],
+"exclude_flags": [
+"--version",
+"-v"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "remove_lines",
+"pattern": "(^npm warn deprecated|^npm notice|looking for funding|run .npm fund|npm warn |^npm info )"
+},
+{
+"action": "keep_lines",
+"pattern": "(^added |^removed |^up to date|^npm error|^npm ERR!|^ERESOLVE|peer dep|Could not resolve)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 20,
+"overflow_msg": "... more output truncated"
+},
+{
+"action": "on_empty",
+"message": "ok"
+}
+],
+"on_error": "passthrough",
+"tests": [
+{
+"name": "successful install",
+"input": "npm warn deprecated inflight@1.0.6: This module is not supported\nnpm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported\n\nadded 245 packages, and audited 246 packages in 12s\n\n29 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n",
+"expected": "added 245 packages, and audited 246 packages in 12s\n"
+},
+{
+"name": "already up to date",
+"input": "\nup to date, audited 246 packages in 1s\n\nfound 0 vulnerabilities\n",
+"expected": "up to date, audited 246 packages in 1s\n"
+},
+{
+"name": "install error",
+"input": "npm ERR! code ERESOLVE\nnpm ERR! ERESOLVE unable to resolve dependency tree\nnpm ERR! Could not resolve dependency:\nnpm ERR! peer react@\"^16.8.0\" from package@1.0.0\n",
+"expected": "npm ERR! code ERESOLVE\nnpm ERR! ERESOLVE unable to resolve dependency tree\nnpm ERR! Could not resolve dependency:\nnpm ERR! peer react@\"^16.8.0\" from package@1.0.0\n"
+}
+],
+"_unsupported": []
+},
+"npx": {
+"name": "npx",
+"version": 2,
+"description": "Condensed npx output: removes install prompts and noise",
+"match": {
+"command": "npx"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^Need to install|^Ok to proceed|^npm warn|^npm notice|^\\s*$)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more output truncated"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"nx": {
+"name": "nx",
+"version": 1,
+"description": "Condensed nx output: task results summary",
+"match": {
+"command": "nx",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "keep_lines",
+"pattern": "(Successfully|Failed|error|Error|NX|Running|Done in|\\d+ succeeded|\\d+ failed)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"ollama": {
+"name": "ollama",
+"version": 1,
+"description": "Condensed ollama output: model status and errors",
+"match": {
+"command": "ollama"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^pulling |^verifying |^writing |^\\s*$|^\\s+\\d+%)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 20
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"oxlint": {
+"name": "oxlint",
+"version": 2,
+"description": "Condensed oxlint output: lint issues",
+"match": {
+"command": "oxlint",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^\\s*\\d+ \\||^\\s*$)"
+},
+{
+"action": "keep_lines",
+"pattern": "(error|warning|help:|\\d+ problems?|\\d+ errors?|\\d+ warnings?|\\u2716|\\u00d7)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more issues"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"ping": {
+"name": "ping",
+"version": 1,
+"description": "Condensed ping output: statistics only",
+"match": {
+"command": "ping",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"pipeline": [
+{
+"action": "keep_lines",
+"pattern": "(^PING|^---.*statistics|packets? transmitted|rtt |round-trip|^\\d+ bytes.*time=)"
+},
+{
+"action": "tail",
+"n": 5
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"pio": {
+"name": "pio",
+"version": 1,
+"description": "Condensed PlatformIO output: build result",
+"match": {
+"command": "pio",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^\\s*(Compiling|Linking|Building|Checking)|^\\s*$)"
+},
+{
+"action": "keep_lines",
+"pattern": "(SUCCESS|FAILED|Error|error|warning|RAM:|Flash:|Environment)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"pip-install": {
+"name": "pip-install",
+"version": 3,
+"description": "Condensed pip output: install result and errors only",
+"match": {
+"command": "pip",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "remove_lines",
+"pattern": "(^\\s+Downloading|^\\s+Using cached|Collecting |^\\s+Preparing|^\\s+Building|^\\s+Installing build)"
+},
+{
+"action": "remove_lines",
+"pattern": "(\\[notice\\]|pip install --upgrade pip)"
+},
+{
+"action": "keep_lines",
+"pattern": "(^Successfully installed|^Requirement already satisfied|^ERROR|^error:|Could not|No matching|installed$|WARNING)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 20,
+"overflow_msg": "... more output truncated"
+},
+{
+"action": "on_empty",
+"message": "ok"
+}
+],
+"on_error": "passthrough",
+"tests": [
+{
+"name": "successful install",
+"input": "Collecting requests==2.31.0\n  Downloading requests-2.31.0-py3-none-any.whl (62 kB)\nCollecting urllib3<3,>=1.21.1\n  Using cached urllib3-2.1.0-py3-none-any.whl (104 kB)\nInstalling collected packages: urllib3, requests\nSuccessfully installed requests-2.31.0 urllib3-2.1.0\n\n[notice] A new release of pip is available: 23.2 -> 24.0\n[notice] To update, run: pip install --upgrade pip\n",
+"expected": "Successfully installed requests-2.31.0 urllib3-2.1.0\n"
+},
+{
+"name": "already satisfied",
+"input": "Requirement already satisfied: requests in ./venv/lib/python3.12/site-packages (2.31.0)\nRequirement already satisfied: urllib3<3,>=1.21.1 in ./venv/lib/python3.12/site-packages (2.1.0)\n",
+"expected": "Requirement already satisfied: requests in ./venv/lib/python3.12/site-packages (2.31.0)\nRequirement already satisfied: urllib3<3,>=1.21.1 in ./venv/lib/python3.12/site-packages (2.1.0)\n"
+},
+{
+"name": "install error",
+"input": "ERROR: Could not find a version that satisfies the requirement nonexistent-pkg\nERROR: No matching distribution found for nonexistent-pkg\n",
+"expected": "ERROR: Could not find a version that satisfies the requirement nonexistent-pkg\nERROR: No matching distribution found for nonexistent-pkg\n"
+}
+],
+"_unsupported": []
+},
+"playwright": {
+"name": "playwright",
+"version": 1,
+"description": "Condensed playwright output: test results and failures",
+"match": {
+"command": "playwright",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*(at |\\s*$)"
+},
+{
+"action": "keep_lines",
+"pattern": "(passed|failed|skipped|\\d+ test|Error|expect|Received|Expected|Timeout|\\u2713|\\u2717|\\u25cf)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 40,
+"overflow_msg": "... more test output"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"pnpm-install": {
+"name": "pnpm-install",
+"version": 3,
+"description": "Condensed pnpm dependency-change output: summary and errors",
+"match": {
+"command": "pnpm",
+"subcommand": [
+"install",
+"i",
+"add",
+"update",
+"up",
+"upgrade",
+"remove",
+"rm",
+"uninstall",
+"un"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^\\+{3,}|^Progress:|^\\s*$)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 20,
+"overflow_msg": "... more output truncated"
+}
+],
+"on_error": "passthrough",
+"tests": [
+{
+"name": "successful install",
+"input": "Progress: resolved 1, reused 0, downloaded 0, added 0\n+++\nProgress: resolved 245, reused 200, downloaded 45, added 245, done\n\ndependencies:\n+ react 19.0.0\n\nDone in 12s\n",
+"expected": "dependencies:\n+ react 19.0.0\nDone in 12s\n"
+},
+{
+"name": "install error",
+"input": "Progress: resolved 1, reused 0, downloaded 0, added 0\nERR_PNPM_NO_MATCHING_VERSION No matching version found for missing@1.0.0\n",
+"expected": "ERR_PNPM_NO_MATCHING_VERSION No matching version found for missing@1.0.0\n"
+}
+],
+"_unsupported": []
+},
+"pnpm-list": {
+"name": "pnpm-list",
+"version": 1,
+"description": "Condensed pnpm list output: dependency tree",
+"match": {
+"command": "pnpm",
+"subcommand": "list"
+},
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "truncate_lines",
+"max": 100
+},
+{
+"action": "head",
+"n": 40,
+"overflow_msg": "... more dependencies"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"poetry-install": {
+"name": "poetry-install",
+"version": 1,
+"description": "Condensed poetry output: install summary",
+"match": {
+"command": "poetry",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^\\s*(Downloading|Installing|Updating)\\s|^\\s*$)"
+},
+{
+"action": "keep_lines",
+"pattern": "(Package operations|Writing|No dependencies|error|already installed|resolved)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 20
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"pre-commit": {
+"name": "pre-commit",
+"version": 1,
+"description": "Condensed pre-commit output: hook results",
+"match": {
+"command": "pre-commit",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "keep_lines",
+"pattern": "(Passed|Failed|Skipped|error|hook id|\\.\\.\\.|Installing|Check)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"prettier": {
+"name": "prettier",
+"version": 2,
+"description": "Condensed prettier output: formatting issues",
+"match": {
+"command": "prettier"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30,
+"overflow_msg": "... more files"
+},
+{
+"action": "on_empty",
+"message": "ok (all formatted)"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"prisma": {
+"name": "prisma",
+"version": 1,
+"description": "Condensed prisma output: migration and generation status",
+"match": {
+"command": "prisma",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "keep_lines",
+"pattern": "(Generated|created|applied|Error|error|Your database|already in sync|migrate|Prisma schema)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 20
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"ps": {
+"name": "ps",
+"version": 1,
+"description": "Condensed ps output: process list",
+"match": {
+"command": "ps"
+},
+"pipeline": [
+{
+"action": "truncate_lines",
+"max": 100
+},
+{
+"action": "head",
+"n": 30,
+"overflow_msg": "... more processes"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"psql": {
+"name": "psql",
+"version": 1,
+"description": "Condensed psql output: query results",
+"match": {
+"command": "psql"
+},
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^[-+]+$"
+},
+{
+"action": "truncate_lines",
+"max": 100
+},
+{
+"action": "head",
+"n": 40,
+"overflow_msg": "... more rows"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"pytest": {
+"name": "pytest",
+"version": 4,
+"description": "Condensed pytest output: failures with locations and summary line",
+"match": {
+"command": "pytest",
+"exclude_flags": [
+"--tb=no",
+"--co",
+"--collect-only",
+"--version",
+"-V"
+]
+},
+"inject": {
+"args": [
+"--tb=line",
+"-q"
+],
+"skip_if_present": [
+"--tb=",
+"-q",
+"--quiet",
+"--co",
+"--collect-only",
+"-v",
+"--verbose"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^[.FEsxX]+\\s+\\[\\d+%\\]"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "remove_lines",
+"pattern": "^[=_ ]+$"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*short test summary info\\s*$"
+},
+{
+"action": "keep_lines",
+"pattern": "(^FAILED |\\d+ (passed|failed|error).* in \\d)"
+},
+{
+"action": "replace",
+"pattern": "^=+ | =+$",
+"replacement": ""
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30,
+"overflow_msg": "... more failures truncated"
+}
+],
+"on_error": "passthrough",
+"tests": [
+{
+"name": "all passing with -q output",
+"input": "..........                                                               [100%]\n10 passed in 0.45s\n",
+"expected": "10 passed in 0.45s\n"
+},
+{
+"name": "failures with -q --tb=line output",
+"input": "..F.F                                                                    [100%]\nFAILED test_math.py::test_add - assert 3 == 4\nFAILED test_math.py::test_sub - assert 1 == 0\n2 failed, 3 passed in 0.12s\n",
+"expected": "FAILED test_math.py::test_add - assert 3 == 4\nFAILED test_math.py::test_sub - assert 1 == 0\n2 failed, 3 passed in 0.12s\n"
+},
+{
+"name": "verbose output with decorators",
+"input": "============================= test session starts ==============================\ncollected 3 items\n\ntest_module.py::test_one PASSED\ntest_module.py::test_two FAILED\n\n=================================== FAILURES ===================================\n_____________________________ test_two _____________________________________\n\nFAILED test_module.py::test_two - AssertionError\n=========================== short test summary info ============================\nFAILED test_module.py::test_two - AssertionError\n========================= 1 failed, 1 passed in 0.05s =========================\n",
+"expected": "FAILED test_module.py::test_two - AssertionError\nFAILED test_module.py::test_two - AssertionError\n1 failed, 1 passed in 0.05s\n"
+}
+],
+"_unsupported": []
+},
+"quarto": {
+"name": "quarto",
+"version": 1,
+"description": "Condensed quarto output: render status",
+"match": {
+"command": "quarto",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "keep_lines",
+"pattern": "(pandoc|Output|Error|error|warning|render)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 20
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"rails-migrate": {
+"name": "rails-migrate",
+"version": 2,
+"description": "Condensed rails db:migrate output",
+"match": {
+"command": "rails",
+"subcommand": "db:migrate"
+},
+"pipeline": [
+{
+"action": "keep_lines",
+"pattern": "\\S"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*(-|->)"
+},
+{
+"action": "keep_lines",
+"pattern": "migrated"
+},
+{
+"action": "regex_extract",
+"pattern": "== \\d+ (\\w+): migrated",
+"format": "- $1"
+},
+{
+"action": "aggregate",
+"patterns": {
+"migrated": "^-"
+},
+"append": true
+},
+{
+"action": "remove_lines",
+"pattern": "^migrated: \\d+$"
+},
+{
+"action": "format_template",
+"template": "{{with .stats}}{{if .migrated}}{{.migrated}} migration{{if ne .migrated 1}}s{{end}} executed:{{else}}no migrations executed{{end}}{{end}}\n{{.lines}}"
+}
+],
+"on_error": "passthrough",
+"tests": [
+{
+"name": "migration names survive the count summary",
+"input": "== 20240101000000 CreateUsers: migrating ======================================\n-- create_table(:users)\n   -> 0.0100s\n-- add_index(:users, :email, {:unique=>true})\n   -> 0.0023s\n== 20240101000000 CreateUsers: migrated (0.0123s) =============================\n\n== 20240202120000 CreatePosts: migrating ======================================\n-- create_table(:posts)\n   -> 0.0081s\n-- add_foreign_key(:posts, :users)\n   -> 0.0044s\n== 20240202120000 CreatePosts: migrated (0.0125s) =============================\n",
+"expected": "2 migrations executed:\n- CreateUsers\n- CreatePosts\n"
+},
+{
+"name": "a single migration is announced in the singular",
+"input": "== 20240101000000 CreateUsers: migrating ======================================\n-- create_table(:users)\n   -> 0.0100s\n== 20240101000000 CreateUsers: migrated (0.0123s) =============================\n",
+"expected": "1 migration executed:\n- CreateUsers\n"
+},
+{
+"name": "a migration that only started is not reported as executed",
+"input": "== 20240101000000 CreateUsers: migrating ======================================\n-- create_table(:users)\n   -> 0.0100s\n",
+"expected": "no migrations executed\n"
+},
+{
+"name": "nothing pending produces no phantom count",
+"input": "",
+"expected": "no migrations executed\n"
+}
+],
+"_unsupported": [
+"aggregate",
+"regex_extract"
+]
+},
+"rails-routes": {
+"name": "rails-routes",
+"version": 2,
+"description": "Summarized rails routes with count and truncation",
+"match": {
+"command": "rails",
+"subcommand": "routes",
+"exclude_flags": [
+"-g",
+"--grep",
+"-c",
+"--controller"
+]
+},
+"pipeline": [
+{
+"action": "keep_lines",
+"pattern": "\\S"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*Prefix"
+},
+{
+"action": "aggregate",
+"patterns": {
+"routes": "(GET|POST|PUT|PATCH|DELETE)"
+},
+"append": true
+},
+{
+"action": "remove_lines",
+"pattern": "^routes: \\d+$"
+},
+{
+"action": "head",
+"n": 15
+},
+{
+"action": "format_template",
+"template": "{{with .stats}}{{if .routes}}{{.routes}} routes:{{else}}no routes{{end}}{{end}}\n{{.lines}}"
+}
+],
+"on_error": "passthrough",
+"tests": [
+{
+"name": "route table survives the count summary",
+"input": "Prefix Verb   URI Pattern                Controller#Action\n  root GET    /                          home#index\n users GET    /users(.:format)           users#index\n       POST   /users(.:format)           users#create\n  user GET    /users/:id(.:format)       users#show\n       PATCH  /users/:id(.:format)       users#update\n       DELETE /users/:id(.:format)       users#destroy\n",
+"expected": "6 routes:\n  root GET    /                          home#index\n users GET    /users(.:format)           users#index\n       POST   /users(.:format)           users#create\n  user GET    /users/:id(.:format)       users#show\n       PATCH  /users/:id(.:format)       users#update\n       DELETE /users/:id(.:format)       users#destroy\n"
+},
+{
+"name": "more than 15 routes are capped and the overflow is announced",
+"input": "Prefix Verb   URI Pattern                Controller#Action\n  root GET    /                          home#index\n users GET    /users(.:format)           users#index\n       POST   /users(.:format)           users#create\n  user GET    /users/:id(.:format)       users#show\n       PATCH  /users/:id(.:format)       users#update\n       DELETE /users/:id(.:format)       users#destroy\n posts GET    /posts(.:format)           posts#index\n       POST   /posts(.:format)           posts#create\n  post GET    /posts/:id(.:format)       posts#show\n       PATCH  /posts/:id(.:format)       posts#update\n       DELETE /posts/:id(.:format)       posts#destroy\n  tags GET    /tags(.:format)            tags#index\n       POST   /tags(.:format)            tags#create\n   tag GET    /tags/:id(.:format)        tags#show\n       PATCH  /tags/:id(.:format)        tags#update\n       DELETE /tags/:id(.:format)        tags#destroy\nhealth GET    /health(.:format)          health#show\n",
+"expected": "17 routes:\n  root GET    /                          home#index\n users GET    /users(.:format)           users#index\n       POST   /users(.:format)           users#create\n  user GET    /users/:id(.:format)       users#show\n       PATCH  /users/:id(.:format)       users#update\n       DELETE /users/:id(.:format)       users#destroy\n posts GET    /posts(.:format)           posts#index\n       POST   /posts(.:format)           posts#create\n  post GET    /posts/:id(.:format)       posts#show\n       PATCH  /posts/:id(.:format)       posts#update\n       DELETE /posts/:id(.:format)       posts#destroy\n  tags GET    /tags(.:format)            tags#index\n       POST   /tags(.:format)            tags#create\n   tag GET    /tags/:id(.:format)        tags#show\n       PATCH  /tags/:id(.:format)        tags#update\n+2 more lines\n"
+},
+{
+"name": "header only means no routes",
+"input": "Prefix Verb URI Pattern Controller#Action\n",
+"expected": "no routes\n"
+}
+],
+"_unsupported": [
+"aggregate"
+]
+},
+"rake": {
+"name": "rake",
+"version": 1,
+"description": "Condensed rake output: task results and errors",
+"match": {
+"command": "rake",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "keep_lines",
+"pattern": "(passed|failed|error|Error|FAIL|OK|Finished|assertions?|tests?|Failure|rake aborted)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 40,
+"overflow_msg": "... more output"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"rg": {
+"name": "rg",
+"version": 2,
+"description": "Condensed ripgrep output: limits results",
+"match": {
+"command": "rg"
+},
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more matches"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"rspec": {
+"name": "rspec",
+"version": 1,
+"description": "Condensed RSpec output with pass/fail summary",
+"match": {
+"command": "rspec",
+"exclude_flags": [
+"--format",
+"-f",
+"--version",
+"-V"
+]
+},
+"pipeline": [
+{
+"action": "keep_lines",
+"pattern": "\\S"
+},
+{
+"action": "keep_lines",
+"pattern": "(^\\d+ examples|^rspec \\./)"
+},
+{
+"action": "head",
+"n": 10
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"rsync": {
+"name": "rsync",
+"version": 1,
+"description": "Condensed rsync output: transfer summary",
+"match": {
+"command": "rsync",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "keep_lines",
+"pattern": "(sent |received |total size|speedup|error|rsync:|bytes/sec)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 10
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"rubocop": {
+"name": "rubocop",
+"version": 2,
+"description": "Condensed rubocop output: offenses by file",
+"match": {
+"command": "rubocop",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^Inspecting|^\\.+$|^\\s*$)"
+},
+{
+"action": "keep_lines",
+"pattern": "(^[A-Z]:|offenses? detected|no offenses|files? inspected|error|warning|convention)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more offenses"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"ruff": {
+"name": "ruff",
+"version": 2,
+"description": "Condensed ruff output: lint issues by file",
+"match": {
+"command": "ruff"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more issues"
+},
+{
+"action": "on_empty",
+"message": "ok (no issues)"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"rustc": {
+"name": "rustc",
+"version": 2,
+"description": "Condensed rustc output: errors and warnings with locations",
+"match": {
+"command": "rustc",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "keep_lines",
+"pattern": "(^error|^warning|^ -->|aborting due to|For more information|could not compile)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more errors truncated"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"shellcheck": {
+"name": "shellcheck",
+"version": 2,
+"description": "Condensed shellcheck output: warnings by file",
+"match": {
+"command": "shellcheck",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^\\s*\\^--|^\\s*$)"
+},
+{
+"action": "keep_lines",
+"pattern": "(^In |SC\\d+|error|warning|note|info|^\\s+\\d+)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more issues"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"shopify": {
+"name": "shopify",
+"version": 1,
+"description": "Condensed shopify CLI output",
+"match": {
+"command": "shopify"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"skopeo": {
+"name": "skopeo",
+"version": 1,
+"description": "Condensed skopeo output: image operations",
+"match": {
+"command": "skopeo"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^Getting image|^Copying |^Writing |^\\s*$)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 20
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"sops": {
+"name": "sops",
+"version": 1,
+"description": "Condensed sops output",
+"match": {
+"command": "sops"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"spring-boot": {
+"name": "spring-boot",
+"version": 1,
+"description": "Condensed spring-boot output: startup and errors",
+"match": {
+"command": "spring-boot",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "keep_lines",
+"pattern": "(Started |ERROR|Exception|WARN|Failed to|Tomcat started|Application run|BUILD)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"ssh": {
+"name": "ssh",
+"version": 1,
+"description": "Condensed ssh output: connection info and errors",
+"match": {
+"command": "ssh"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30,
+"overflow_msg": "... more output"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"stat": {
+"name": "stat",
+"version": 1,
+"description": "Condensed stat output",
+"match": {
+"command": "stat"
+},
+"pipeline": [
+{
+"action": "truncate_lines",
+"max": 100
+},
+{
+"action": "head",
+"n": 20
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"swift-build": {
+"name": "swift-build",
+"version": 2,
+"description": "Condensed swift build output: errors and warnings",
+"match": {
+"command": "swift",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^Compiling |^Linking |^Build complete|^Fetching |^\\s*$)"
+},
+{
+"action": "keep_lines",
+"pattern": "(error:|warning:|Build complete|Build FAILED|note:|compile error)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 40
+},
+{
+"action": "on_empty",
+"message": "ok (compiled)"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"systemctl": {
+"name": "systemctl",
+"version": 1,
+"description": "Condensed systemctl output: service status",
+"match": {
+"command": "systemctl",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "keep_lines",
+"pattern": "(Loaded:|Active:|Main PID:|Status:|\\u25cf|failed|running|inactive|enabled|disabled|dead)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 20
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"task": {
+"name": "task",
+"version": 1,
+"description": "Condensed task (taskfile) output",
+"match": {
+"command": "task"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^(task: |\\s*$)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 40,
+"overflow_msg": "... more output"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"terraform": {
+"name": "terraform",
+"version": 1,
+"description": "Condensed terraform output: plan changes and errors",
+"match": {
+"command": "terraform",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "keep_lines",
+"pattern": "(Plan:|Apply|Destroy|Error|Warning|created|destroyed|changed|No changes|will be|must be|forces replacement|\\+|\\-|~)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more changes"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"tofu": {
+"name": "tofu",
+"version": 1,
+"description": "Condensed OpenTofu output: plan changes and errors",
+"match": {
+"command": "tofu",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "keep_lines",
+"pattern": "(Plan:|Apply|Destroy|Error|Warning|created|destroyed|changed|No changes|will be|must be|\\+|\\-|~)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more changes"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"tree": {
+"name": "tree",
+"version": 1,
+"description": "Condensed tree output: truncates deep hierarchies",
+"match": {
+"command": "tree"
+},
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "head",
+"n": 50,
+"overflow_msg": "... more entries"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"trunk-build": {
+"name": "trunk-build",
+"version": 1,
+"description": "Condensed trunk build output",
+"match": {
+"command": "trunk",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "keep_lines",
+"pattern": "(error|Error|warning|FAIL|SUCCESS|Build|Compiling|finished)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"tsc": {
+"name": "tsc",
+"version": 4,
+"description": "Condensed tsc output: type errors and summary",
+"match": {
+"command": "tsc",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\d+\\s+\\S"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s+~"
+},
+{
+"action": "keep_lines",
+"pattern": "(error TS\\d+|warning TS\\d+|Found \\d+ error)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 40,
+"overflow_msg": "... more errors truncated"
+},
+{
+"action": "on_empty",
+"message": "ok (no type errors)"
+}
+],
+"on_error": "passthrough",
+"tests": [
+{
+"name": "no errors",
+"input": "",
+"expected": "ok (no type errors)\n"
+},
+{
+"name": "pretty format errors with context",
+"input": "src/index.ts:3:1 - error TS2304: Cannot find name 'foo'.\n\n3 foo = 1;\n  ~~~\n\nsrc/utils.ts:10:5 - error TS2322: Type 'string' is not assignable to type 'number'.\n\n10   const x: number = \"hello\";\n     ~\n\nFound 2 errors in 2 files.\n",
+"expected": "src/index.ts:3:1 - error TS2304: Cannot find name 'foo'.\nsrc/utils.ts:10:5 - error TS2322: Type 'string' is not assignable to type 'number'.\nFound 2 errors in 2 files.\n"
+},
+{
+"name": "classic format errors",
+"input": "src/index.ts(3,1): error TS2304: Cannot find name 'foo'.\nsrc/utils.ts(10,5): error TS2322: Type 'string' is not assignable to type 'number'.\nFound 2 errors in 2 files.\n",
+"expected": "src/index.ts(3,1): error TS2304: Cannot find name 'foo'.\nsrc/utils.ts(10,5): error TS2322: Type 'string' is not assignable to type 'number'.\nFound 2 errors in 2 files.\n"
+}
+],
+"_unsupported": []
+},
+"turbo": {
+"name": "turbo",
+"version": 1,
+"description": "Condensed turborepo output: task results summary",
+"match": {
+"command": "turbo",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^\\s*$|^\\s*\\u2502|cache hit|cache miss)"
+},
+{
+"action": "keep_lines",
+"pattern": "(Tasks:|error|Error|FAIL|failed|succeeded|cached|Total|Duration)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"ty": {
+"name": "ty",
+"version": 2,
+"description": "Condensed ty (Python type checker) output",
+"match": {
+"command": "ty"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 40,
+"overflow_msg": "... more errors"
+},
+{
+"action": "on_empty",
+"message": "ok (no errors)"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"uv-add": {
+"name": "uv-add",
+"version": 1,
+"description": "Condensed uv add output: install summary",
+"match": {
+"command": "uv",
+"subcommand": "add",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^\\s*(Downloading|Building|Preparing)|^\\s*$)"
+},
+{
+"action": "keep_lines",
+"pattern": "(Resolved|Installed|Uninstalled|Audited|error|warning|Already|packages in)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 20
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"uv-lock": {
+"name": "uv-lock",
+"version": 1,
+"description": "Condensed uv lock output: resolve summary",
+"match": {
+"command": "uv",
+"subcommand": "lock",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^\\s*(Downloading|Building|Preparing)|^\\s*$)"
+},
+{
+"action": "keep_lines",
+"pattern": "(Resolved|Installed|Uninstalled|Audited|error|warning|Already|packages in)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 20
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"uv-remove": {
+"name": "uv-remove",
+"version": 1,
+"description": "Condensed uv remove output: uninstall summary",
+"match": {
+"command": "uv",
+"subcommand": "remove",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^\\s*(Downloading|Building|Preparing)|^\\s*$)"
+},
+{
+"action": "keep_lines",
+"pattern": "(Resolved|Installed|Uninstalled|Audited|error|warning|Already|packages in)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 20
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"uv-sync": {
+"name": "uv-sync",
+"version": 1,
+"description": "Condensed uv output: install summary",
+"match": {
+"command": "uv",
+"subcommand": "sync",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^\\s*(Downloading|Building|Preparing)|^\\s*$)"
+},
+{
+"action": "keep_lines",
+"pattern": "(Resolved|Installed|Uninstalled|Audited|error|warning|Already|packages in)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 20
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"vitest": {
+"name": "vitest",
+"version": 1,
+"description": "Condensed vitest output: test results and failures",
+"match": {
+"command": "vitest",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*(at |\\s*$)"
+},
+{
+"action": "keep_lines",
+"pattern": "(PASS|FAIL|Tests\\s|Test Files|Duration|AssertionError|expected|received|\\u2713|\\u2717|\\u25cf)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 40,
+"overflow_msg": "... more test output"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"wc": {
+"name": "wc",
+"version": 1,
+"description": "Condensed wc output: limits long file lists",
+"match": {
+"command": "wc"
+},
+"pipeline": [
+{
+"action": "head",
+"n": 30,
+"overflow_msg": "... more files"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"wget": {
+"name": "wget",
+"version": 1,
+"description": "Condensed wget output: download summary",
+"match": {
+"command": "wget",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^\\s*\\d+K|\\.\\.\\.|^\\s*$)"
+},
+{
+"action": "keep_lines",
+"pattern": "(Saving|saved|Resolving|Connecting|HTTP|ERROR|failed|Downloaded|Length:)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"xcodebuild": {
+"name": "xcodebuild",
+"version": 1,
+"description": "Condensed xcodebuild output: build result and errors",
+"match": {
+"command": "xcodebuild",
+"exclude_flags": [
+"--version",
+"-V"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^\\s*(CompileC|Ld|CpResource|ProcessInfoPlistFile|CodeSign|Touch|MkDir|WriteAuxiliaryFile)|^\\s*cd |^\\s*/|^\\s*export |^\\s*$)"
+},
+{
+"action": "keep_lines",
+"pattern": "(BUILD|FAILED|error:|warning:|\\*\\* BUILD|Test Suite|Test Case|Executed \\d+|Generating)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 40
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"yadm": {
+"name": "yadm",
+"version": 1,
+"description": "Condensed yadm output",
+"match": {
+"command": "yadm"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "truncate_lines",
+"max": 100
+},
+{
+"action": "head",
+"n": 30
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"yamllint": {
+"name": "yamllint",
+"version": 2,
+"description": "Condensed yamllint output: issues by file",
+"match": {
+"command": "yamllint"
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 30,
+"overflow_msg": "... more issues"
+},
+{
+"action": "on_empty",
+"message": "ok (no issues)"
+}
+],
+"on_error": "passthrough",
+"_unsupported": []
+},
+"yarn-install": {
+"name": "yarn-install",
+"version": 3,
+"description": "Condensed yarn dependency-change output: completion summary and errors",
+"match": {
+"command": "yarn",
+"subcommand": [
+"",
+"install",
+"add",
+"remove",
+"up",
+"upgrade",
+"upgrade-interactive"
+]
+},
+"streams": [
+"stdout",
+"stderr"
+],
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "(^\\[\\d+/\\d+\\] (Resolving|Fetching|Linking|Building)|YN0000: [\u250c\u2514\u2502]|^\\s*$)"
+},
+{
+"action": "truncate_lines",
+"max": 120
+},
+{
+"action": "head",
+"n": 20,
+"overflow_msg": "... more output truncated"
+}
+],
+"on_error": "passthrough",
+"tests": [
+{
+"name": "classic install",
+"input": "[1/4] Resolving packages...\n[2/4] Fetching packages...\n[3/4] Linking dependencies...\n[4/4] Building fresh packages...\nsuccess Saved lockfile.\nDone in 12.34s.\n",
+"expected": "success Saved lockfile.\nDone in 12.34s.\n"
+},
+{
+"name": "modern install",
+"input": "YN0000: \u250c Resolution step\nYN0000: \u2502 Some package output\nYN0000: \u2514 Completed\n\u27a4 YN0000: Done in 0s 123ms\n",
+"expected": "\u27a4 YN0000: Done in 0s 123ms\n"
+},
+{
+"name": "install error",
+"input": "[1/4] Resolving packages...\nerror Couldn't find package \"missing\" on the \"npm\" registry.\n",
+"expected": "error Couldn't find package \"missing\" on the \"npm\" registry.\n"
+}
+],
+"_unsupported": []
+},
+"gh-run-list": {
+"name": "gh-run-list",
+"match": {
+"command": "gh",
+"subcommand": "run"
+},
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "truncate_lines",
+"max": 110
+},
+{
+"action": "head",
+"n": 15
+}
+],
+"on_error": "passthrough",
+"_unsupported": [],
+"tests": [
+{
+"name": "caps long run lists",
+"input": "completed\tsuccess\tCI\tmain\tpush\t1234560\t1m2s\t2026-08-10\ncompleted\tsuccess\tCI\tmain\tpush\t1234561\t1m2s\t2026-08-11\ncompleted\tsuccess\tCI\tmain\tpush\t1234562\t1m2s\t2026-08-12\ncompleted\tsuccess\tCI\tmain\tpush\t1234563\t1m2s\t2026-08-13\ncompleted\tsuccess\tCI\tmain\tpush\t1234564\t1m2s\t2026-08-14\ncompleted\tsuccess\tCI\tmain\tpush\t1234565\t1m2s\t2026-08-15\ncompleted\tsuccess\tCI\tmain\tpush\t1234566\t1m2s\t2026-08-16\ncompleted\tsuccess\tCI\tmain\tpush\t1234567\t1m2s\t2026-08-17\ncompleted\tsuccess\tCI\tmain\tpush\t1234568\t1m2s\t2026-08-18\ncompleted\tsuccess\tCI\tmain\tpush\t1234569\t1m2s\t2026-08-10\ncompleted\tsuccess\tCI\tmain\tpush\t12345610\t1m2s\t2026-08-11\ncompleted\tsuccess\tCI\tmain\tpush\t12345611\t1m2s\t2026-08-12\ncompleted\tsuccess\tCI\tmain\tpush\t12345612\t1m2s\t2026-08-13\ncompleted\tsuccess\tCI\tmain\tpush\t12345613\t1m2s\t2026-08-14\ncompleted\tsuccess\tCI\tmain\tpush\t12345614\t1m2s\t2026-08-15\ncompleted\tsuccess\tCI\tmain\tpush\t12345615\t1m2s\t2026-08-16\ncompleted\tsuccess\tCI\tmain\tpush\t12345616\t1m2s\t2026-08-17\ncompleted\tsuccess\tCI\tmain\tpush\t12345617\t1m2s\t2026-08-18\ncompleted\tsuccess\tCI\tmain\tpush\t12345618\t1m2s\t2026-08-10\ncompleted\tsuccess\tCI\tmain\tpush\t12345619\t1m2s\t2026-08-11",
+"expected": "completed\tsuccess\tCI\tmain\tpush\t1234560\t1m2s\t2026-08-10\ncompleted\tsuccess\tCI\tmain\tpush\t1234561\t1m2s\t2026-08-11\ncompleted\tsuccess\tCI\tmain\tpush\t1234562\t1m2s\t2026-08-12\ncompleted\tsuccess\tCI\tmain\tpush\t1234563\t1m2s\t2026-08-13\ncompleted\tsuccess\tCI\tmain\tpush\t1234564\t1m2s\t2026-08-14\ncompleted\tsuccess\tCI\tmain\tpush\t1234565\t1m2s\t2026-08-15\ncompleted\tsuccess\tCI\tmain\tpush\t1234566\t1m2s\t2026-08-16\ncompleted\tsuccess\tCI\tmain\tpush\t1234567\t1m2s\t2026-08-17\ncompleted\tsuccess\tCI\tmain\tpush\t1234568\t1m2s\t2026-08-18\ncompleted\tsuccess\tCI\tmain\tpush\t1234569\t1m2s\t2026-08-10\ncompleted\tsuccess\tCI\tmain\tpush\t12345610\t1m2s\t2026-08-11\ncompleted\tsuccess\tCI\tmain\tpush\t12345611\t1m2s\t2026-08-12\ncompleted\tsuccess\tCI\tmain\tpush\t12345612\t1m2s\t2026-08-13\ncompleted\tsuccess\tCI\tmain\tpush\t12345613\t1m2s\t2026-08-14\ncompleted\tsuccess\tCI\tmain\tpush\t12345614\t1m2s\t2026-08-15\n+5 more lines"
+}
+]
+},
+"gh-pr-list": {
+"name": "gh-pr-list",
+"match": {
+"command": "gh",
+"subcommand": "pr"
+},
+"pipeline": [
+{
+"action": "strip_ansi"
+},
+{
+"action": "remove_lines",
+"pattern": "^\\s*$"
+},
+{
+"action": "truncate_lines",
+"max": 110
+},
+{
+"action": "head",
+"n": 20
+}
+],
+"on_error": "passthrough",
+"_unsupported": [],
+"tests": [
+{
+"name": "passthrough short lists",
+"input": "#12\tFix hooks\tfix-hooks\tOPEN\n#11\tAdd guard\tguard\tMERGED",
+"expected": "#12\tFix hooks\tfix-hooks\tOPEN\n#11\tAdd guard\tguard\tMERGED"
+}
+]
+}
+}
